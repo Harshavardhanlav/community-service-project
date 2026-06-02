@@ -14,4 +14,11 @@ const createNotice = async (req, res)=> {
     }
 
 }
-module.exports = createNotice;
+const getNotices = async (req,res) => {
+
+   const notices = await Notice.find();
+
+   res.json(notices);
+
+};
+module.exports = {createNotice, getNotices};

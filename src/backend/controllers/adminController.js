@@ -30,5 +30,23 @@ const createAdmin = async (req, res) => {
    }
 
 };
+const adminLogin = async (req,res) => {
+ const admin = await Admin.findOne({
+   username:req.body.username
+ });
+ if(!admin) {
+   return res.json({
+      message:"admin not found"
+   })
+ }
+ if(admin.password !== req.body.password) {
+   return res.json({
+      message:"password not matched"
 
-module.exports = createAdmin ;
+   })
+ }
+ res.json({
+   message:"login Successful"
+ })
+}
+module.exports = {createAdmin, adminLogin} ;

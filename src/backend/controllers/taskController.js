@@ -14,4 +14,11 @@ const createTask = async (req, res)=> {
     }
 
 }
-module.exports = createTask;
+const getTasks = async (req,res) => {
+
+   const tasks = await Task.find();
+
+   res.json(tasks);
+
+};
+module.exports = {createTask, getTasks};
