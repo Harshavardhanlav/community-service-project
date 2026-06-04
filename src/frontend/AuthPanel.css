@@ -122,7 +122,17 @@
    cursor: pointer;
    transition: all 0.5s ease;
 }
+.forgot-password{
+   margin-top: 12px;
+   text-align: center;
+   color: #9ca3af;
+   cursor: pointer;
+   font-size: 14px;
+}
 
+.forgot-password:hover{
+   color: white;
+}
 .toggle-btn:hover{
    color: white;
 }

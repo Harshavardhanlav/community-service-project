@@ -10,6 +10,7 @@ import { About } from "./frontend/About";
 import { Team } from "./frontend/Team";
 import { Footer } from "./frontend/Footer";
 import {LAuthPanel} from "./frontend/LAuthPanel"
+import{LHero} from "./frontend/LHero"
 
 import { useEffect, useState } from "react";
 
@@ -46,7 +47,7 @@ function App() {
 
          {register ? <Navbar /> : <LNavbar />}
 
-         <Hero />
+         {register ? <Hero /> : <LHero/>}
 
          {register ? <AuthPanel /> : <LAuthPanel />}
 
