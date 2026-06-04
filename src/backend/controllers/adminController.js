@@ -30,6 +30,28 @@ const createAdmin = async (req, res) => {
    }
 
 };
+const checkAdmin = async (req, res) => {
+
+   try {
+
+      const existingAdmin = await Admin.findOne();
+
+      if(existingAdmin){
+
+         return res.status(400).json({
+            message:"Admin already exists"
+         });
+      }
+
+   } catch(err){
+
+      res.status(500).json({
+         message: err.message
+      });
+
+   }
+
+};
 const adminLogin = async (req,res) => {
  const admin = await Admin.findOne({
    username:req.body.username
@@ -49,4 +71,4 @@ const adminLogin = async (req,res) => {
    message:"login Successful"
  })
 }
-module.exports = {createAdmin, adminLogin} ;
+module.exports = {createAdmin, adminLogin, checkAdmin} ;

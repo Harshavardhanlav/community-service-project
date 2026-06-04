@@ -8,12 +8,14 @@ const taskRoutes = require("./routes/taskRoutes")
 const noticeRoutes = require("./routes/noticeRoutes");
 const adminRoutes = require("./routes/adminRoutes")
 const calenderRoutes = require("./routes/calenderRoutes")
-const attendaceRoutes = require("./routes/attendanceRoutes")
+const attendaceRoutes = require("./routes/attendanceRoutes");
+
 dotenv.config();
 ConnectDB();
 console.log(process.env.MONGO_URI);
 const app = express();
 app.use(express.json());
+app.use(cors());
 app.use("/teachers",teacherRoutes);
 app.use("/calendar", calenderRoutes);
 app.use("/tasks",taskRoutes);
