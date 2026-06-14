@@ -58,7 +58,23 @@ export async function createCalendarDate(calendarData) {
     body: JSON.stringify(calendarData),
   });
 }
+export async function deleteTeacher(id) {
 
+   const response = await fetch(
+      `http://localhost:5000/teachers/${id}`,
+      {
+         method: "DELETE",
+      }
+   );
+
+   const data = await response.json();
+
+   if (!response.ok) {
+      throw new Error(data.message);
+   }
+
+   return data;
+}
 export async function updateCalendarDate(id, calendarData) {
   return request(`/calendar/update/${id}`, {
     method: "PUT",

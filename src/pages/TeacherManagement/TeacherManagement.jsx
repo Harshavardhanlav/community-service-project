@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
-import { createTeacher, getTeachers } from "../../services/api";
+
 import { TeacherCard } from "../../components/TeacherCard/TeacherCard";
 import { EmptyState } from "../../components/EmptyState/EmptyState";
 import { LoadingSpinner } from "../../components/LoadingSpinner/LoadingSpinner";
 import { ConfirmModal } from "../../components/ConfirmModal/ConfirmModal";
 import "./TeacherManagement.css";
-
+import {
+   createTeacher,
+   getTeachers,
+   deleteTeacher
+} from "../../services/api";
 const initialForm = {
   teacherID: "",
   password: "",
@@ -106,10 +110,25 @@ export default function TeacherManagement() {
     }
   }
 
-  function confirmDeleteAction() {
-    setMessage("Teacher delete is not available via backend API.");
-    setConfirmDelete(false);
-  }
+async function confirmDeleteAction() {
+
+   try {
+
+      await deleteTeacher(selectedTeacher._id);
+
+      await fetchTeachers();
+
+      setConfirmDelete(false);
+
+      setSelectedTeacher(null);
+
+   } catch (error) {
+
+      setMessage(error.message);
+
+   }
+
+}
 
   return (
     <section className="teacher-management-page">
@@ -353,16 +372,18 @@ export default function TeacherManagement() {
           </div>
         </div>
       )}
-
-      {confirmDelete && selectedTeacher && (
-        <ConfirmModal
-          title="Delete Teacher?"
-          message={`Delete ${selectedTeacher.fullName}? Backend support is unavailable for this action.`}
-          confirmLabel="Acknowledge"
-          onCancel={() => setConfirmDelete(false)}
-          onConfirm={confirmDeleteAction}
-        />
-      )}
+{confirmDelete && selectedTeacher && (
+  <ConfirmModal
+    title="Delete Teacher?"
+    message={`Are you sure you want to delete ${selectedTeacher.fullName}?`}
+    confirmLabel="Delete"
+    onCancel={() => {
+      setConfirmDelete(false);
+      setSelectedTeacher(null);
+    }}
+    onConfirm={confirmDeleteAction}
+  />
+)}
     </section>
   );
 }
