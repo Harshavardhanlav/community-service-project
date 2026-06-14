@@ -1,0 +1,148 @@
+.teacher-management-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+  padding: 30px;
+}
+
+.teacher-management-header h2 {
+  margin: 0;
+}
+.teacher-card {
+   border-radius: 20px;
+   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+   padding: 40px;
+   border: 1px solid rgba(255,255,255,0.1);
+   background-color: white;
+   transition: 0.3s ease;
+     color: #090909;
+  padding: 0.7em 1.7em;
+  font-size: 18px;
+  border-radius: 0.5em;
+  background: #e8e8e8;
+  cursor: pointer;
+  border: 1px solid #e8e8e8;
+  transition: all 0.3s;
+  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+}
+.input-with-icon{
+   position: relative;
+
+   width: 100%;
+}
+
+.input-icon{
+   position: absolute;
+
+   left: 12px;
+
+   top: 50%;
+
+   transform: translateY(-50%);
+
+   color: #9ca3af;
+
+   display: flex;
+   align-items: center;
+   justify-content: center;
+
+   pointer-events: none;
+}
+
+.input-with-icon input{
+   width: 100%;
+
+   padding-left: 42px;
+}
+.icon2 {
+  color:black;
+}
+.teacher-card:hover {
+   transform: translateY(-5px);
+   border-color: rgba(255,255,255,0.25);
+}
+.teacher-management-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  padding: 20px;
+}
+.teacher-card-image img{
+  height: 150px;
+  width: 150px;
+  margin-left: 60px;
+}
+.teacher-card-details h3 {
+  text-align: center;
+}
+.teacher-management-loading,
+.teacher-management-error {
+  display: grid;
+  place-items: center;
+  min-height: 44vh;
+  gap: 12px;
+}
+
+.panel-drawer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: grid;
+  place-items: flex-end center;
+  padding: 24px;
+  z-index: 1100;
+}
+
+.panel-drawer__content {
+  width: min(560px, 100%);
+  padding: 28px;
+  border-radius: 24px;
+}
+
+.panel-drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.teacher-form {
+  display: grid;
+  gap: 18px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.form-row input {
+  border: 2px solid #cecece;
+}
+
+.form-row.full {
+  grid-template-columns: 1fr;
+}
+
+.form-message {
+  color: #d32f2f;
+  margin: 0;
+}
+
+.panel-drawer__cta {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 900px) {
+  .teacher-management-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}

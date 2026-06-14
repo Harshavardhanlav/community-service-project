@@ -105,6 +105,65 @@ const getAttendance = async (req, res) => {
    }
 
 };
+
+const getTodaySummary = async (req, res) => {
+
+   try {
+
+      const today = new Date();
+
+      const startOfDay = new Date(
+         today.getFullYear(),
+         today.getMonth(),
+         today.getDate()
+      );
+
+      const endOfDay = new Date(
+         today.getFullYear(),
+         today.getMonth(),
+         today.getDate() + 1
+      );
+
+      const todayAttendance = await Attendance.find({
+         attendanceDate: {
+            $gte: startOfDay,
+            $lt: endOfDay
+         }
+      });
+
+      const present = todayAttendance.filter(
+         record => record.status === "Present"
+      ).length;
+
+      const absent = todayAttendance.filter(
+         record => record.status === "Absent"
+      ).length;
+
+      const total = present + absent;
+
+      const percentage =
+         total === 0
+            ? 0
+            : Number(
+                 ((present / total) * 100).toFixed(2)
+              );
+
+      res.status(200).json({
+         present,
+         absent,
+         total,
+         percentage
+      });
+
+   } catch (error) {
+
+      res.status(500).json({
+         message: error.message
+      });
+
+   }
+
+};
 const getTeacherAttendanceReport = async (req, res) => {
 
    try {
@@ -202,6 +261,6 @@ module.exports = {
 
    markAttendance,
    getAttendance,
-   getTeacherAttendanceReport
-
+   getTeacherAttendanceReport,
+   getTodaySummary
 };

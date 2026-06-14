@@ -1,0 +1,55 @@
+.activity-logs-header {
+  margin-bottom: 24px;
+  padding: 20px;
+}
+
+.activity-logs-loading,
+.activity-logs-error {
+  display: grid;
+  place-items: center;
+  min-height: 240px;
+  gap: 12px;
+}
+
+.activity-timeline {
+  padding: 24px;
+}
+
+.activity-timeline ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 20px;
+}
+
+.activity-timeline-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 18px;
+}
+
+.activity-timeline-item__marker {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #000000;
+  margin-top: 6px;
+}
+
+.activity-timeline-item__type {
+  margin: 0 0 6px;
+  font-weight: 700;
+}
+
+.activity-timeline-item time {
+  display: block;
+  margin-top: 10px;
+  color: #666666;
+}
+
+@media (max-width: 700px) {
+  .activity-timeline-item {
+    grid-template-columns: 1fr;
+  }
+}

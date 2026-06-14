@@ -1,0 +1,68 @@
+﻿.notice-card {
+  border-radius: 22px;
+  padding: 22px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.notice-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(139, 92, 246, 0.18);
+}
+
+.notice-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.notice-card__header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.notice-card p {
+  margin: 0 0 18px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.notice-card__footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.notice-card__controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.notice-card__controls button {
+  min-width: 90px;
+}
+
+.notice-card__priority {
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.notice-card__priority--high {
+  background: #ef4444;
+}
+
+.notice-card__priority--medium {
+  background: #f59e0b;
+}
+
+.notice-card__priority--low {
+  background: #10b981;
+}

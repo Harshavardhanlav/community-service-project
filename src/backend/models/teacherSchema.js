@@ -40,7 +40,8 @@ const teacherSchema = new mongoose.Schema({
 
     profilePic:{
         type:String,
-        default:""
+        default:"",
+        required:true
     } 
 
 }, {

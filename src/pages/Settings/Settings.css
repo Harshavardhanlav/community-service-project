@@ -1,0 +1,38 @@
+.settings-header {
+  margin-bottom: 24px;
+  padding: 20px;
+}
+
+.settings-list {
+  display: grid;
+  gap: 24px;
+}
+
+.settings-card h3 {
+  margin-top: 0;
+}
+
+.settings-form {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+}
+.card {
+  padding: 20px;
+}
+.settings-form label {
+  display: grid;
+  gap: 8px;
+}
+
+.settings-message {
+  margin-top: 20px;
+  color: #000000;
+  font-weight: 600;
+}
+
+@media (max-width: 760px) {
+  .settings-list {
+    grid-template-columns: 1fr;
+  }
+}

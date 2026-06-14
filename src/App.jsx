@@ -1,67 +1,26 @@
-import "./App.css";
+import { BrowserRouter } from "react-router-dom";
+import { AppRoutes } from "./routes/AppRoutes";
+import { Sidebar } from "./components/Sidebar/Sidebar";
+import { Header } from "./components/Header/Header";
+import { ThemeProvider } from "./components/ThemeProvider/ThemeProvider";
 
-import { Navbar } from "./frontend/RNavbar";
-import { LNavbar } from "./frontend/LNavbar";
-
-import { Hero } from "./frontend/Hero";
-import { AuthPanel } from "./frontend/AuthPanel";
-import { Features } from "./frontend/Features";
-import { About } from "./frontend/About";
-import { Team } from "./frontend/Team";
-import { Footer } from "./frontend/Footer";
-import {LAuthPanel} from "./frontend/LAuthPanel"
-import{LHero} from "./frontend/LHero"
-
-import { useEffect, useState } from "react";
 
 function App() {
-
-   const [register, setRegister] = useState(true);
-
-   const checkAdmin = async () => {
-
-      const response = await fetch(
-         "http://localhost:5000/admin/check-admin"
-      );
-
-      const data = await response.json();
-
-      console.log(data);
-
-      if(data.message === "Admin already exists"){
-
-         setRegister(false);
-
-      }
-   };
-
-   useEffect(() => {
-
-      checkAdmin();
-
-   }, []);
-
-   return (
-
-      <div className="app">
-
-         {register ? <Navbar /> : <LNavbar />}
-
-         {register ? <Hero /> : <LHero/>}
-
-         {register ? <AuthPanel /> : <LAuthPanel />}
-
-         <Features />
-
-         <About />
-
-         <Team />
-
-         <Footer />
-
-      </div>
-
-   );
+  return (
+    <ThemeProvider>
+      <BrowserRouter>
+        <div className="app-shell">
+          <Sidebar />
+          <div className="app-content">
+            <Header />
+            <main className="page-content">
+              <AppRoutes />
+            </main>
+          </div>
+        </div>
+      </BrowserRouter>
+    </ThemeProvider>
+  );
 }
 
 export default App;

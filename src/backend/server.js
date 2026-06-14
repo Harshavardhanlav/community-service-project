@@ -9,7 +9,8 @@ const noticeRoutes = require("./routes/noticeRoutes");
 const adminRoutes = require("./routes/adminRoutes")
 const calenderRoutes = require("./routes/calenderRoutes")
 const attendaceRoutes = require("./routes/attendanceRoutes");
-
+const dashboardRoutes =
+require("./routes/dashboardRoutes");
 dotenv.config();
 ConnectDB();
 console.log(process.env.MONGO_URI);
@@ -22,6 +23,10 @@ app.use("/tasks",taskRoutes);
 app.use("/notices",noticeRoutes);
 app.use("/admin",adminRoutes);
 app.use("/attendance",attendaceRoutes)
+app.use(
+   "/dashboard",
+   dashboardRoutes
+);
 app.get("/", (req, res)=> {
     res.send("Backend is running sucessfully");
 })
