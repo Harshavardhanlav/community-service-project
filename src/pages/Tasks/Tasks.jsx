@@ -87,7 +87,7 @@ const filteredTasks = tasks.filter((task) => {
 <div className="tasks-page__header card">
 
   <div>
-    <h2>Tasks</h2>
+    <h2>📝Tasks</h2>
     <p>Manage and track all teacher tasks.</p>
   </div>
 
@@ -103,7 +103,7 @@ const filteredTasks = tasks.filter((task) => {
       <div className="tasks-page__layout">
 
         <div className="tasks-list card">
-          <h3>Task List</h3>
+          <h3>📋Task List</h3>
           <div className="tasks-toolbar">
 
   <div className="tasks-search-box">
@@ -174,11 +174,11 @@ const filteredTasks = tasks.filter((task) => {
   <div className="task-meta">
 
     <div className="task-meta-item">
-      👤 {task.assignedTo}
+      👨‍🏫 {task.assignedTo}
     </div>
 
     <div className="task-meta-item">
-      📅 {task.deadline
+      ⏰ {task.deadline
         ? new Date(task.deadline).toLocaleDateString()
         : "No Deadline"}
     </div>

@@ -27,6 +27,9 @@ export default function Attendance() {
       setLoading(false);
     }
   }
+  useEffect(() => {
+  loadAttendance();
+}, []);
 
   const filteredRecords = useMemo(() => {
     return (records || []).filter((record) => {
@@ -44,7 +47,7 @@ export default function Attendance() {
     <section className="attendance-page">
       <div className="attendance-page__header card">
         <div>
-          <h2>Attendance Records</h2>
+          <h2>📲Attendance Records</h2>
           <p>Review attendance status for teachers across the school.</p>
         </div>
       </div>
@@ -81,10 +84,10 @@ export default function Attendance() {
           <table>
             <thead>
               <tr>
-                <th>Teacher ID</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Location</th>
+                <th><b>🆔Teacher ID</b></th>
+                <th><b>📅Date</b></th>
+                <th><b>✅Status</b></th>
+                <th><b>📍Location</b></th>
               </tr>
             </thead>
             <tbody>

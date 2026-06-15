@@ -29,8 +29,8 @@ export default function ActivityLogs() {
     <section className="activity-logs-page">
       <div className="activity-logs-header card">
         <div>
-          <h2>Activity Logs</h2>
-          <p>See the latest activity timeline for teachers, notices, and attendance changes.</p>
+          <h2>📋Activity Logs</h2>
+          <p>See the latest system updates, management logs, and administrative adjustments.</p>
         </div>
       </div>
 
@@ -47,20 +47,67 @@ export default function ActivityLogs() {
       ) : logs.length === 0 ? (
         <EmptyState title="No activity logged" message="No activity has been recorded yet." />
       ) : (
-        <div className="activity-timeline card">
-          <ul>
-            {logs.map((entry) => (
-              <li key={entry.id} className="activity-timeline-item">
-                <div className="activity-timeline-item__marker" />
-                <div>
-                  <p className="activity-timeline-item__type">{entry.type}</p>
-                  <p>{entry.title}</p>
-                  <p>{entry.description}</p>
-                  <time>{new Date(entry.date).toLocaleString()}</time>
-                </div>
-              </li>
-            ))}
-          </ul>
+        <div className="activity-table-container">
+          <table className="activity-table">
+            <thead>
+              <tr>
+                <th>Action Type</th>
+                <th>Target Event</th>
+                <th>Description Details</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              {logs.map((entry) => {
+                let badgeClass = "activity-badge--info";
+                let emoji = "📝";
+
+                const typeLower = (entry.type || "").toLowerCase();
+                const descLower = (entry.description || "").toLowerCase();
+
+                if (typeLower.includes("notice") || descLower.includes("notice")) {
+                  badgeClass = "activity-badge--warning";
+                  emoji = "📢";
+                } else if (typeLower.includes("teacher") || typeLower.includes("add")) {
+                  badgeClass = "activity-badge--success";
+                  emoji = "👨‍🏫";
+                } else if (typeLower.includes("attendance") || typeLower.includes("mark")) {
+                  badgeClass = "activity-badge--success";
+                  emoji = "✅";
+                } else if (typeLower.includes("task") || typeLower.includes("assign")) {
+                  badgeClass = "activity-badge--info";
+                  emoji = "📝";
+                }
+
+                return (
+                  <tr key={entry.id || entry.date}>
+                    <td>
+                      <span className={`activity-badge ${badgeClass}`}>
+                        <i style={{ fontStyle: "normal" }}>{emoji}</i>
+                        {entry.type || "Event"}
+                      </span>
+                    </td>
+                    <td>
+                      <span style={{ fontWeight: "600", color: "#1a2e26" }}>
+                        {entry.title || "Activity Update"}
+                      </span>
+                    </td>
+                    <td>
+                      <span style={{ color: "#5c6f67" }}>{entry.description || "-"}</span>
+                    </td>
+                    <td className="activity-time-cell">
+                      {entry.date ? new Date(entry.date).toLocaleString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }) : "Just now"}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
     </section>

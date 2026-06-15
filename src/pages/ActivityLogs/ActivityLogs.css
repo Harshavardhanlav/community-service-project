@@ -1,55 +1,113 @@
-.activity-logs-header {
-  margin-bottom: 24px;
-  padding: 20px;
+/* Container Box Layout */
+.activity-logs-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
+.activity-logs-header {
+  margin-bottom: 8px;
+}
+
+/* Status Screen Indicators */
 .activity-logs-loading,
 .activity-logs-error {
   display: grid;
   place-items: center;
   min-height: 240px;
   gap: 12px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #edf2f0;
 }
 
-.activity-timeline {
-  padding: 24px;
+/* 🌟 The New Modern Activity Table Container Wrapper */
+.activity-table-container {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #edf2f0;
+  overflow: hidden; /* Clips corner shadows to maintain border radii */
 }
 
-.activity-timeline ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: 20px;
+.activity-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-family: 'Inter', sans-serif;
 }
 
-.activity-timeline-item {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 18px;
+/* Table Header Styles */
+.activity-table th {
+  background-color: #f8faf9;
+  color: #5c6f67;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 16px 24px;
+  border-bottom: 1px solid #edf2f0;
 }
 
-.activity-timeline-item__marker {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #000000;
-  margin-top: 6px;
+/* Table Rows & Columns Cells */
+.activity-table td {
+  padding: 18px 24px;
+  font-size: 14px;
+  color: #1a2e26;
+  border-bottom: 1px solid #edf2f0;
+  vertical-align: middle;
+  transition: background-color 0.2s ease-in-out; /* Smooth hover transition */
 }
 
-.activity-timeline-item__type {
-  margin: 0 0 6px;
-  font-weight: 700;
+/* Subtle row hover state */
+.activity-table tbody tr:hover td {
+  background-color: #fcfdfe;
 }
 
-.activity-timeline-item time {
-  display: block;
-  margin-top: 10px;
-  color: #666666;
+/* Remove bottom border on the final data row */
+.activity-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
-@media (max-width: 700px) {
-  .activity-timeline-item {
-    grid-template-columns: 1fr;
-  }
+/* Log Time configuration column */
+.activity-time-cell {
+  color: #7a8f85 !important;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* 🌟 Vibrant, Pastel Color Badges Matching the System Palette */
+.activity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Type 1: Success / Creation actions (Green Theme) */
+.activity-badge--success {
+  background-color: #e2f4ed;
+  color: #115e42;
+}
+
+/* Type 2: Info / Updates actions (Blue Theme) */
+.activity-badge--info {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+/* Type 3: Security / Access / Warning actions (Orange Theme) */
+.activity-badge--warning {
+  background-color: #ffedd5;
+  color: #c2410c;
+}
+
+/* 3D Emoji Drop Shadow effect matching your Sidebar */
+.activity-badge i {
+  font-style: normal;
+  font-size: 15px;
+  line-height: 1;
+  filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.15));
 }

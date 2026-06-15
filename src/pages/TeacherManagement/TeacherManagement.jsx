@@ -134,7 +134,7 @@ async function confirmDeleteAction() {
     <section className="teacher-management-page">
       <div className="teacher-management-header card">
         <div>
-          <h2>Teacher Management</h2>
+          <h2>👨‍🏫Teacher Management</h2>
           <p>Keep teacher records up to date and add new staff profiles.</p>
         </div>
         <button type="button" className="primary" onClick={openCreatePanel}>

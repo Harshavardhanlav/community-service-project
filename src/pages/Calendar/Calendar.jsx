@@ -4,7 +4,6 @@ import {
   getCalendarDates,
   updateCalendarDate,
 } from "../../services/api";
-import { EmptyState } from "../../components/EmptyState/EmptyState";
 import { LoadingSpinner } from "../../components/LoadingSpinner/LoadingSpinner";
 import { ConfirmModal } from "../../components/ConfirmModal/ConfirmModal";
 import "./Calendar.css";
@@ -23,6 +22,17 @@ const monthNames = [
   "November",
   "December",
 ];
+
+// Contextual Event Emoji Determiner
+const getEventEmoji = (eventTitle) => {
+  if (!eventTitle) return '📅';
+  const title = eventTitle.toLowerCase();
+  if (title.includes('exam') || title.includes('test')) return '📝';
+  if (title.includes('sports') || title.includes('games')) return '🏆';
+  if (title.includes('meeting') || title.includes('staff')) return '🤝';
+  if (title.includes('fair') || title.includes('science')) return '🚀';
+  return '📢';
+};
 
 export default function CalendarPage() {
   const [events, setEvents] = useState([]);
@@ -168,7 +178,7 @@ export default function CalendarPage() {
     <section className="calendar-page">
       <div className="calendar-page__header card">
         <div>
-          <h2>School Calendar</h2>
+          <h2>📅 School Calendar</h2>
           <p>Manage holidays, events, and working Sundays with a modern calendar interface.</p>
         </div>
         <div className="calendar-page__controls">
@@ -221,69 +231,114 @@ export default function CalendarPage() {
             ))}
           </div>
           <div className="calendar-grid__body">
-            {calendarDays.map((cell) => (
-              <button
-                key={cell.key}
-                type="button"
-                className={`calendar-grid__cell ${cell.empty ? "calendar-grid__cell--empty" : ""} ${cell.record?.dayType === "Holiday" ? "calendar-grid__cell--holiday" : ""} ${cell.date?.getDay() === 0 ? "calendar-grid__cell--sunday" : ""}`}
-                disabled={cell.empty}
-                onClick={() => cell.date && openDatePanel(cell.date, cell.record)}
-              >
-                {!cell.empty && (
-                  <>
-                    <span>{cell.day}</span>
-                    {cell.record?.hasEvent && <span className="calendar-grid__event-dot" />}
-                  </>
-                )}
-              </button>
-            ))}
+            {calendarDays.map((cell) => {
+              const isSunday = cell.date?.getDay() === 0;
+              const isHoliday = cell.record?.dayType === "Holiday";
+              const isWorking = cell.record?.dayType === "Working" || (!cell.empty && !isHoliday);
+              const hasEvent = cell.record?.hasEvent;
+
+              const cellClasses = [
+                "calendar-grid__cell",
+                cell.empty ? "calendar-grid__cell--empty" : "",
+                isSunday ? "calendar-grid__cell--sunday" : "",
+                isHoliday ? "calendar-grid__cell--holiday" : "",
+                isWorking ? "calendar-grid__cell--working" : "",
+                hasEvent ? "calendar-grid__cell--event" : ""
+              ].filter(Boolean).join(" ");
+
+              return (
+                <button
+                  key={cell.key}
+                  type="button"
+                  className={cellClasses}
+                  disabled={cell.empty}
+                  onClick={() => cell.date && openDatePanel(cell.date, cell.record)}
+                >
+                  {!cell.empty && (
+                    <>
+                      <div className="calendar-grid__cell-top">
+                        <span>{cell.day}</span>
+                        {hasEvent && (
+                          <span className="calendar-grid__event-emoji" title={cell.record.title}>
+                            {getEventEmoji(cell.record.title)}
+                          </span>
+                        )}
+                      </div>
+                      {hasEvent && <div className="calendar-grid__event-dot"></div>}
+                    </>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
 
-      {panelOpen && selectedDate && (
-        <div className="panel-drawer">
-          <div className="panel-drawer__content card">
+      {/* Control Form Side Drawer Overlay */}
+      {panelOpen && (
+        <div className="panel-drawer" onClick={() => setPanelOpen(false)}>
+          <div className="panel-drawer__content" onClick={(e) => e.stopPropagation()}>
             <div className="panel-drawer__header">
-              <div>
-                <h3>{selectedRecord ? "Edit Date" : "Add Date"}</h3>
-                <p>{selectedDate.toDateString()}</p>
-              </div>
-              <button type="button" className="secondary" onClick={() => setPanelOpen(false)}>
-                Close
-              </button>
+              <h3>{selectedDate ? selectedDate.toLocaleDateString('en-US', { dateStyle: 'long' }) : "Manage Date"}</h3>
             </div>
-            <form className="calendar-form" onSubmit={saveEvent}>
+            <form onSubmit={saveEvent} className="calendar-form">
               <label>
-                Event Title
-                <input name="title" value={form.title} onChange={handleInputChange} />
+                Day Classification
+                <select name="dayType" value={form.dayType} onChange={handleInputChange}>
+                  <option value="Working">Regular Working Day</option>
+                  <option value="Holiday">Official School Holiday</option>
+                </select>
               </label>
-              <label>
-                Description
-                <textarea name="description" rows="4" value={form.description} onChange={handleInputChange} />
-              </label>
-              <div className="form-row">
-                <label>
-                  Day Type
-                  <select name="dayType" value={form.dayType} onChange={handleInputChange}>
-                    <option value="Working">Working</option>
-                    <option value="Holiday">Holiday</option>
-                  </select>
-                </label>
-                <label className="calendar-checkbox">
-                  <input name="hasEvent" type="checkbox" checked={form.hasEvent} onChange={handleInputChange} />
-                  <span>Add Event</span>
-                </label>
+
+              <div className="calendar-checkbox">
+                <input
+                  type="checkbox"
+                  id="hasEvent"
+                  name="hasEvent"
+                  checked={form.hasEvent}
+                  onChange={handleInputChange}
+                />
+                <label htmlFor="hasEvent">Host Special Campus Event on this Date</label>
               </div>
-              {message && <p className="form-message">{message}</p>}
+
+              {form.hasEvent && (
+                <>
+                  <label>
+                    Event Title
+                    <input
+                      type="text"
+                      name="title"
+                      value={form.title}
+                      onChange={handleInputChange}
+                      placeholder="e.g. Final Science Examination, Sports Day"
+                      required
+                    />
+                  </label>
+                  <label>
+                    Event Description
+                    <textarea
+                      name="description"
+                      value={form.description}
+                      onChange={handleInputChange}
+                      placeholder="Add event information notes..."
+                    />
+                  </label>
+                </>
+              )}
+
+              {message && <p className="form-message error">{message}</p>}
+
               <div className="panel-drawer__cta">
+                <button type="button" className="secondary" onClick={() => setPanelOpen(false)}>
+                  Cancel
+                </button>
                 {selectedRecord && (
-                  <button type="button" className="secondary" onClick={() => setConfirmDelete(true)}>
-                    Delete Event
+                  <button type="button" className="secondary alert" onClick={() => setConfirmDelete(true)}>
+                    Clear
                   </button>
                 )}
                 <button type="submit" className="primary" disabled={saving}>
-                  Save Date
+                  {saving ? "Saving..." : "Commit Structure"}
                 </button>
               </div>
             </form>
@@ -293,11 +348,10 @@ export default function CalendarPage() {
 
       {confirmDelete && (
         <ConfirmModal
-          title="Delete Event?"
-          message="This will remove the event from the selected date in the calendar."
-          onCancel={() => setConfirmDelete(false)}
+          title="Clear Event Configuration?"
+          message="Are you sure you want to clear this scheduled event layout record details from your tracking ledger?"
           onConfirm={confirmDeleteEvent}
-          confirmLabel="Delete"
+          onCancel={() => setConfirmDelete(false)}
         />
       )}
     </section>

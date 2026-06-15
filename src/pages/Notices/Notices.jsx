@@ -50,6 +50,7 @@ export default function Notices() {
     try {
       await createNotice(form);
       setForm(initialForm);
+      setShowForm(false); // Smoothly dismiss modal view upon processing save successfully
       await fetchNotices();
     } catch (submitError) {
       setMessage(submitError.message);
@@ -63,66 +64,60 @@ export default function Notices() {
   function handleDelete(notice) {
     setConfirmAction({ title: "Delete Notice", message: "Deleting notices is not exposed through the backend API yet." });
   }
+
   const filteredNotices = notices.filter((notice) =>
-  notice.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  notice.message?.toLowerCase().includes(searchTerm.toLowerCase())
-);
+    notice.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    notice.message?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <section className="notices-page">
-<div className="notices-page__header">
+      <div className="notices-page__header">
+        <div>
+          <h2>🔔 Notices</h2>
+          <p>View and manage all published notices.</p>
+        </div>
 
-  <div>
-    <h2>Notices</h2>
-    <p>View and manage all published notices.</p>
-  </div>
-
-  <button
-    className="primary"
-    onClick={() => setShowForm(true)}
-  >
-    + Create Notice
-  </button>
-
-</div>
+        <button
+          className="primary"
+          onClick={() => setShowForm(true)}
+        >
+          + Create Notice
+        </button>
+      </div>
 
       <div className="notices-page__layout">
-
-
         <div className="notices-list card">
-
           <h3>Published Notices</h3>
-<div className="search-box">
+          
+          <div className="search-box">
+            <span className="search-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m21 21-4.35-4.35M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"
+                />
+              </svg>
+            </span>
 
-  <span className="search-icon">
+            <input
+              type="text"
+              placeholder="Search notices..."
+              className="notice-search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
 
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="20"
-      fill="none"
-      viewBox="0 0 24 24"
-    >
-      <path
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="m21 21-4.35-4.35M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"
-      />
-    </svg>
-
-  </span>
-
-  <input
-    type="text"
-    placeholder="Search notices..."
-    className="notice-search"
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-  />
-
-</div>
           {loading ? (
             <div className="notices-list__loading">
               <LoadingSpinner />
@@ -133,103 +128,93 @@ export default function Notices() {
               <h4>Unable to load notices</h4>
               <p>{error}</p>
             </div>
-          ) : notices.length === 0 ? (
+          ) : filteredNotices.length === 0 ? (
             <EmptyState
-              title="No notices yet"
-              message="Publish your first notice to keep staff informed."
+              title="No notices found"
+              message={searchTerm ? "Try adjusting your search terms." : "Publish your first notice to keep staff informed."}
             />
           ) : (
-           <div className="notices-scroll">
-  <div className="notices-grid">
-             {filteredNotices.map((notice) => (
-                <NoticeCard
-                  key={notice._id || notice.title}
-                  notice={notice}
-                  onEdit={() => handleEdit(notice)}
-                  onDelete={() => handleDelete(notice)}
-                />
-              ))}
+            <div className="notices-scroll">
+              <div className="notices-grid">
+                {filteredNotices.map((notice) => (
+                  <NoticeCard
+                    key={notice._id || notice.title}
+                    notice={notice}
+                    onEdit={() => handleEdit(notice)}
+                    onDelete={() => handleDelete(notice)}
+                  />
+                ))}
               </div>
             </div>
           )}
         </div>
       </div>
-{showForm && (
 
-  <div className="notice-modal">
+      {showForm && (
+        <div className="notice-modal">
+          <div className="notice-modal-content card">
+            <div className="notice-modal-header">
+              <h3>Create Notice</h3>
+              <button
+                type="button"
+                className="secondary"
+                onClick={() => setShowForm(false)}
+              >
+                Close
+              </button>
+            </div>
 
-    <div className="notice-modal-content card">
+            <form onSubmit={handleSubmit}>
+              <label>
+                Title
+                <input
+                  name="title"
+                  value={form.title}
+                  onChange={handleInputChange}
+                  required
+                />
+              </label>
 
-      <div className="notice-modal-header">
+              <label>
+                Message
+                <textarea
+                  name="message"
+                  rows="5"
+                  value={form.message}
+                  onChange={handleInputChange}
+                  required
+                />
+              </label>
 
-        <h3>Create Notice</h3>
+              <label>
+                Priority
+                <select
+                  name="priority"
+                  value={form.priority}
+                  onChange={handleInputChange}
+                >
+                  <option value="High">High</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Low">Low</option>
+                </select>
+              </label>
 
-        <button
-          type="button"
-          className="secondary"
-          onClick={() => setShowForm(false)}
-        >
-          Close
-        </button>
+              {message && (
+                <p className="form-message">
+                  {message}
+                </p>
+              )}
 
-      </div>
-
-      <form onSubmit={handleSubmit}>
-
-        <label>
-          Title
-          <input
-            name="title"
-            value={form.title}
-            onChange={handleInputChange}
-            required
-          />
-        </label>
-
-        <label>
-          Message
-          <textarea
-            name="message"
-            rows="5"
-            value={form.message}
-            onChange={handleInputChange}
-            required
-          />
-        </label>
-
-        <label>
-          Priority
-          <select
-            name="priority"
-            value={form.priority}
-            onChange={handleInputChange}
-          >
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
-          </select>
-        </label>
-
-        {message && (
-          <p className="form-message">
-            {message}
-          </p>
-        )}
-
-        <button
-          type="submit"
-          className="primary"
-        >
-          Publish Notice
-        </button>
-
-      </form>
-
-    </div>
-
-  </div>
-
-)}
+              <button
+                type="submit"
+                className="primary"
+              >
+                Publish Notice
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
       {confirmAction && (
         <ConfirmModal

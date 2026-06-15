@@ -9,11 +9,17 @@
   gap: 18px;
   padding: 22px;
   margin-bottom: 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #edf2f0;
 }
 
 .attendance-reports__filters label {
   display: grid;
   gap: 10px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  color: #1a2e26;
 }
 
 .attendance-reports__stats {
@@ -23,8 +29,37 @@
   margin-bottom: 24px;
 }
 
+/* 🌟 UPDATED STATS CARD TYPOGRAPHY */
+.stats-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #edf2f0;
+}
+
+.stats-card__label {
+  font-size: 18px; /* Larger, dominant label */
+  font-weight: 700;
+  color: #1a2e26;
+}
+
+.stats-card__value {
+  font-size: 15px !important;      
+  font-weight: 400 !important;     /* Forces regular weight */
+  color: #8fa096 !important;       /* Forces the lighter color */
+  font-family: 'Inter', sans-serif !important;
+  font-style: normal !important;   /* Prevents accidental italics */
+  letter-spacing: 0.02em;
+}
+
 .attendance-reports__chart {
   padding: 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #edf2f0;
 }
 
 .attendance-reports-loading,

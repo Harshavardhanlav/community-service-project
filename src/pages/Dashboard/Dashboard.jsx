@@ -108,7 +108,7 @@ export default function Dashboard() {
           <div className="dashboard-page__hero card">
             <div className="dashboard-page__hero-copy">
               <span className="dashboard-page__hero-chip">Today</span>
-              <h1>Welcome back</h1>
+              <h1>🌟Welcome back</h1>
               <p>Live school metrics, attendance insights, and upcoming event summaries all in one place.</p>
             </div>
             <div className="dashboard-page__hero-date">
@@ -120,9 +120,9 @@ export default function Dashboard() {
           <div className="dashboard-page__top">
 <div className="dashboard-page__stats-area">
   <div className="dashboard-page__stats">
-    <StatsCard label="Total Teachers" value={summary?.teacherCount ?? 0} />
-    <StatsCard label="Attendance" value={`${attendanceSummary?.percentage ?? 0}%`} />
-    <StatsCard label="Pending Tasks" value={summary?.pendingTasks ?? 0} />
+    <StatsCard label="👨‍🏫Total Teachers" value={summary?.teacherCount ?? 0} />
+    <StatsCard label="📊Attendance" value={`${attendanceSummary?.percentage ?? 0}%`} />
+    <StatsCard label="📋Pending Tasks" value={summary?.pendingTasks ?? 0} />
   </div>
 
   <QuickActions />

@@ -23,11 +23,10 @@ export function Header() {
   return (
     <header className="page-header">
       <div>
-        <p className="page-badge">NEXUS Admin</p>
-        <h1>{title}</h1>
+        <p className="page-badge">🟢Nexus Admin</p>
       </div>
       <button type="button" className="theme-toggle" onClick={toggleTheme}>
-        {theme === "dark" ? "Light Mode" : "Dark Mode"}
+        {theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
       </button>
     </header>
   );

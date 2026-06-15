@@ -1,26 +1,35 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "./Sidebar.css";
 
 const menuItems = [
-  { label: "Dashboard", path: "/" },
-  { label: "Teacher Management", path: "/teachers" },
-  { label: "Attendance", path: "/attendance" },
-  { label: "Attendance Reports", path: "/attendance-reports" },
-  { label: "Calendar", path: "/calendar" },
-  { label: "Notices", path: "/notices" },
-  { label: "Tasks", path: "/tasks" },
-  { label: "Activity Logs", path: "/activity-logs" },
-  { label: "Settings", path: "/settings" },
-  { label: "Logout", path: "/", external: false },
+  { label: "Dashboard", path: "/", icon: "🏠" },
+  { label: "Teacher Management", path: "/teachers", icon: "👨‍🏫" },
+  { label: "Mark Attendance", path: "/attendance", icon: "🖐️" },
+  { label: "My Report", path: "/attendance-reports", icon: "📊" },
+  { label: "Calendar", path: "/calendar", icon: "📅" },
+  { label: "Notices", path: "/notices", icon: "📢" },
+  { label: "Tasks", path: "/tasks", icon: "✅" },
+  { label: "Activity Logs", path: "/activity-logs", icon: "📝" },
+  { label: "Settings", path: "/settings", icon: "⚙️" },
 ];
 
 export function Sidebar() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    navigate("/");
+  };
+
   return (
     <aside className="sidebar">
       <div className="sidebar__brand">
-        <span className="sidebar__logo">NEXUS</span>
-        <p>Staff Management</p>
+        <span className="sidebar__logo">
+    <i style={{ fontStyle: "normal", marginRight: "8px", verticalAlign: "middle" }}>🎓</i>
+    NEXUS
+  </span>
+  <h4>Teacher Management</h4>
       </div>
+
       <nav className="sidebar__nav">
         {menuItems.map((item) => (
           <NavLink
@@ -30,17 +39,14 @@ export function Sidebar() {
               `sidebar__link ${isActive ? "sidebar__link--active" : ""}`
             }
           >
-            {item.label}
+            {/* 🌟 Hardcoded style wrapper to force emojis to display inline with proper layout dimensions */}
+            <i style={{ fontStyle: "normal", marginRight: "12px", display: "inline-block" }}>
+              {item.icon}
+            </i>
+            <span>{item.label}</span>
           </NavLink>
         ))}
       </nav>
-      <div className="sidebar__profile card">
-        <div className="sidebar__profile-avatar">O</div>
-        <div className="sidebar__profile-info">
-          <strong>Olivia Price</strong>
-          <span>Operations Lead</span>
-        </div>
-      </div>
     </aside>
   );
 }

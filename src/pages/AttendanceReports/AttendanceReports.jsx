@@ -74,7 +74,7 @@ export default function AttendanceReports() {
     <section className="attendance-reports-page">
       <div className="attendance-reports-header card">
         <div>
-          <h2>Attendance Reports</h2>
+          <h2>📊Attendance Reports</h2>
           <p>View monthly attendance performance for each teacher in NEXUS.</p>
         </div>
       </div>
@@ -119,9 +119,9 @@ export default function AttendanceReports() {
       ) : (
         <>
           <div className="attendance-reports__stats">
-            <StatsCard label="Attendance %" value={`${report.attendancePercentage || 0}%`} />
-            <StatsCard label="Present Days" value={report.presentDays || 0} />
-            <StatsCard label="Working Days" value={report.totalWorkingDays || 0} />
+            <StatsCard label="📊Attendance %" value={`${report.attendancePercentage || 0}%`} />
+            <StatsCard label="🟢Present Days" value={report.presentDays || 0} />
+            <StatsCard label="📅Working Days" value={report.totalWorkingDays || 0} />
           </div>
           <div className="attendance-reports__chart card">
             <AttendanceChart data={chartData} />

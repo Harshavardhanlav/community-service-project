@@ -46,7 +46,7 @@ export default function Settings() {
 
       <div className="settings-header card">
         <div>
-          <h2>Settings</h2>
+          <h2>⚙️Settings</h2>
           <p>Manage your account password.</p>
         </div>
       </div>

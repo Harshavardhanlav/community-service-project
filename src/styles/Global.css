@@ -1,4 +1,5 @@
-﻿:root {
+﻿@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap');
+:root {
   --sidebar-bg: #081120;
   --sidebar-text: #ffffff;
 
@@ -444,4 +445,41 @@ button {
 img {
   display: block;
   max-width: 100%;
+}
+/* Apply the Tasks page font configuration globally */
+html,
+body,
+#root,
+button,
+input,
+select,
+textarea {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif !important;
+  
+  /* Enables high-fidelity subpixel anti-aliasing for that crisp, clean text look */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Sets a clean structural default for body typography */
+  color: #1a2e26; 
+}
+
+/* Ensure all content headers follow the same crisp font geometry */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif !important;
+  letter-spacing: -0.02em; /* Gives large titles a modern, tight workspace layout */
+}
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  font-family: 'Lora', Georgia, serif !important;
+  color: #1a2e26;
+  background-color: #fdfdfd; /* Optional: a very light off-white works great with Serif fonts */
+}
+
+/* 3. Your Headers */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif !important;
+  font-weight: 700;
+  color: #1a2e26;
 }
