@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { getTeachers, getTeacherAttendanceReport } from "../../services/api";
 import { StatsCard } from "../../components/StatsCard/StatsCard";
 import { AttendanceChart } from "../../components/AttendanceChart/AttendanceChart";
-import { EmptyState } from "../../components/EmptyState/EmptyState";
+import  EmptyState  from "../../components/EmptyState/EmptyState";
 import { LoadingSpinner } from "../../components/LoadingSpinner/LoadingSpinner";
 import "./AttendanceReports.css";
 

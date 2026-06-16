@@ -33,6 +33,7 @@ const teacherLogin = async (req,res) => {
    if(!teacher){
 
       return res.json({
+         success: false,
          message: "Teacher not found"
       });
 
@@ -41,13 +42,25 @@ const teacherLogin = async (req,res) => {
    if(teacher.password !== req.body.password){
 
       return res.json({
+         success: false,
          message: "Password not matched"
       });
 
    }
 
    res.json({
-      message: "Login Successful"
+      success: true,
+      message: "Login Successful",
+      teacher: {
+         _id: teacher._id,
+         teacherID: teacher.teacherID,
+         fullName: teacher.fullName,
+         subjects: teacher.subjects,
+         designation: teacher.designation,
+         mobile: teacher.mobile,
+         profilePic: teacher.profilePic,
+         role: teacher.role
+      }
    });
 
 };

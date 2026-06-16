@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { TeacherCard } from "../../components/TeacherCard/TeacherCard";
-import { EmptyState } from "../../components/EmptyState/EmptyState";
+import  EmptyState from "../../components/EmptyState/EmptyState";
 import { LoadingSpinner } from "../../components/LoadingSpinner/LoadingSpinner";
 import { ConfirmModal } from "../../components/ConfirmModal/ConfirmModal";
 import "./TeacherManagement.css";

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createTask, getTasks, deleteTask, updateTask, getTeachers } from "../../services/api";
-import { EmptyState } from "../../components/EmptyState/EmptyState";
+import  EmptyState  from "../../components/EmptyState/EmptyState";
 import { LoadingSpinner } from "../../components/LoadingSpinner/LoadingSpinner";
 import { ConfirmModal } from "../../components/ConfirmModal/ConfirmModal";
 import "./Tasks.css";
@@ -334,7 +334,7 @@ const filteredTasks = tasks.filter((task) => {
 
       <option
         key={teacher._id}
-        value={`${teacher.fullName} (${teacher.teacherID})`}
+        value={teacher.fullName}
       >
         {teacher.fullName} ({teacher.teacherID})
       </option>

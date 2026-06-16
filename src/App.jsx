@@ -15,8 +15,10 @@ import{LHero} from "./frontend/LHero"
 
 // Import Dashboard Components
 import { Sidebar } from "./components/Sidebar/Sidebar";
+import { TeacherSidebar } from "./components/TeacherSidebar/TeacherSidebar";
 import { Header } from "./components/Header/Header";
 import { AppRoutes } from "./routes/AppRoutes";
+import { TeacherRoutes } from "./routes/TeacherRoutes";
 import { ThemeProvider } from "./components/ThemeProvider/ThemeProvider";
 
 import { useEffect, useState } from "react";
@@ -24,7 +26,8 @@ import { useEffect, useState } from "react";
 function App() {
 
    const [register, setRegister] = useState(true);
-   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+   const [userRole, setUserRole] = useState(null);
 
    const checkAdmin = async () => {
       try {
@@ -44,24 +47,35 @@ function App() {
    };
 
    useEffect(() => {
-      // Check if admin is logged in from localStorage
+      // Check if user is logged in from localStorage
       const adminLoggedIn = localStorage.getItem("adminLoggedIn");
-      if (adminLoggedIn === "true") {
-         setIsAdminLoggedIn(true);
+      const role = localStorage.getItem("userRole");
+      
+      if (adminLoggedIn === "true" || role === "admin") {
+         setIsUserLoggedIn(true);
+         setUserRole("admin");
+      } else if (role === "teacher") {
+         setIsUserLoggedIn(true);
+         setUserRole("teacher");
       } else {
          checkAdmin();
       }
    }, []);
 
 const handleLoginSuccess = () => {
-   setIsAdminLoggedIn(true);
+   const role = localStorage.getItem("userRole");
+   setUserRole(role);
+   setIsUserLoggedIn(true);
 };
 
 const handleRegisterSuccess = () => {
-   setIsAdminLoggedIn(true);
+   localStorage.setItem("userRole", "admin");
+   localStorage.setItem("adminLoggedIn", "true");
+   setUserRole("admin");
+   setIsUserLoggedIn(true);
 };
 
-if (isAdminLoggedIn) {
+if (isUserLoggedIn && userRole === "admin") {
    return (
       <BrowserRouter>
          <ThemeProvider>
@@ -76,6 +90,23 @@ if (isAdminLoggedIn) {
       </BrowserRouter>
    );
 }
+
+if (isUserLoggedIn && userRole === "teacher") {
+   return (
+      <BrowserRouter>
+         <ThemeProvider>
+            <div className="app-dashboard">
+               <TeacherSidebar />
+               <div className="app-dashboard-content">
+                  <Header />
+                  <TeacherRoutes />
+               </div>
+            </div>
+         </ThemeProvider>
+      </BrowserRouter>
+   );
+}
+
 return (
    <div className="app">
 
@@ -96,7 +127,6 @@ return (
 
    </div>
 );
-
 }
 
 export default App;

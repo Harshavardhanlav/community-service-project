@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getActivityLogs } from "../../services/api";
-import { EmptyState } from "../../components/EmptyState/EmptyState";
+import  EmptyState  from "../../components/EmptyState/EmptyState";
 import { LoadingSpinner } from "../../components/LoadingSpinner/LoadingSpinner";
 import "./ActivityLogs.css";
 

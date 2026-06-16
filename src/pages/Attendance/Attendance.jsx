@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { getAttendanceRecords } from "../../services/api";
-import { EmptyState } from "../../components/EmptyState/EmptyState";
+import EmptyState  from "../../components/EmptyState/EmptyState";
 import { LoadingSpinner } from "../../components/LoadingSpinner/LoadingSpinner";
 import "./Attendance.css";
 

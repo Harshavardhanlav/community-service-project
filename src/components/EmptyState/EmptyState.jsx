@@ -1,6 +1,6 @@
 import "./EmptyState.css";
 
-export function EmptyState({ title, message }) {
+export default function EmptyState({ title, message }) {
   return (
     <div className="empty-state card">
       <div className="empty-state__icon">•</div>

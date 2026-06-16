@@ -31,7 +31,43 @@ export function LAuthPanel({ onLoginSuccess }) {
          if (data.success || data.message === "login Successful") {
             // Save admin session to localStorage
             localStorage.setItem("adminLoggedIn", "true");
+            localStorage.setItem("userRole", "admin");
             localStorage.setItem("adminID", adminID);
+            // Call the callback to refresh app state
+            if (onLoginSuccess) onLoginSuccess();
+         } else {
+            setError(data.message || "Login failed");
+         }
+      } catch (err) {
+         setError("Connection error: " + err.message);
+      }
+   };
+
+   const handleTeacherLogin = async () => {
+      setError("");
+      try {
+         const response = await fetch(
+            "http://localhost:5000/teachers/teacher-login",
+            {
+               method: "POST",
+               headers: {
+                  "Content-Type": "application/json"
+               },
+               body: JSON.stringify({
+                  teacherID: adminID,
+                  password: password
+               })
+            }
+         );
+
+         const data = await response.json();
+
+         if (data.success && data.teacher) {
+            // Save teacher session to localStorage
+            localStorage.setItem("userRole", "teacher");
+            localStorage.setItem("teacherID", data.teacher.teacherID);
+            localStorage.setItem("teacherName", data.teacher.fullName);
+            localStorage.setItem("teacherData", JSON.stringify(data.teacher));
             // Call the callback to refresh app state
             if (onLoginSuccess) onLoginSuccess();
          } else {
@@ -114,7 +150,10 @@ export function LAuthPanel({ onLoginSuccess }) {
 
                   {error && <p style={{ color: "red", fontSize: "12px", marginBottom: "10px" }}>{error}</p>}
 
-                  <button className="auth-submit-btn" onClick={mode === "Admin Login" ? handleAdminLogin : () => {}}>
+                  <button 
+                     className="auth-submit-btn" 
+                     onClick={mode === "Admin Login" ? handleAdminLogin : handleTeacherLogin}
+                  >
                      Login
                   </button>
 
