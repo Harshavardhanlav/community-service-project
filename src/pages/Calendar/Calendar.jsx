@@ -3,6 +3,7 @@ import {
   createCalendarDate,
   getCalendarDates,
   updateCalendarDate,
+  deleteCalendarDate
 } from "../../services/api";
 import { LoadingSpinner } from "../../components/LoadingSpinner/LoadingSpinner";
 import { ConfirmModal } from "../../components/ConfirmModal/ConfirmModal";
@@ -46,23 +47,37 @@ export default function CalendarPage() {
   const [form, setForm] = useState({ title: "", description: "", dayType: "Working", hasEvent: false });
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [message, setMessage] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     loadCalendar();
   }, []);
 
-  async function loadCalendar() {
-    setLoading(true);
-    setError("");
-    try {
-      const data = await getCalendarDates();
-      setEvents(data || []);
-    } catch (fetchError) {
-      setError(fetchError.message);
-    } finally {
-      setLoading(false);
-    }
+async function loadCalendar() {
+
+  setLoading(true);
+
+  setError("");
+
+  try {
+
+    const data = await getCalendarDates();
+
+    console.log("Calendar Data:", data);
+
+    setEvents(data || []);
+
+  } catch (fetchError) {
+
+    setError(fetchError.message);
+
+  } finally {
+
+    setLoading(false);
+
   }
+
+}
 
   const firstDayOfMonth = useMemo(
     () => new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
@@ -89,18 +104,24 @@ export default function CalendarPage() {
     return days;
   }, [currentDate, events, firstDayOfMonth]);
 
-  function openDatePanel(date, record) {
-    setSelectedDate(date);
-    setSelectedRecord(record || null);
-    setForm({
-      title: record?.title || "",
-      description: record?.description || "",
-      dayType: record?.dayType || (date.getDay() === 0 ? "Holiday" : "Working"),
-      hasEvent: record?.hasEvent ?? false,
-    });
-    setMessage("");
-    setPanelOpen(true);
-  }
+function openDatePanel(date, record) {
+
+  setSelectedDate(date);
+
+  setSelectedRecord(record || null);
+
+  setForm({
+    title: record?.title || "",
+    description: record?.description || "",
+    dayType: record?.dayType || "Working",
+    hasEvent: true
+  });
+
+  setIsEditing(false);
+
+  setPanelOpen(true);
+
+}
 
   function handleNavigation(offset) {
     setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + offset, 1));
@@ -124,32 +145,55 @@ export default function CalendarPage() {
     }));
   }
 
-  async function saveEvent(event) {
-    event.preventDefault();
-    setMessage("");
-    setSaving(true);
-    try {
-      const payload = {
-        title: form.title,
-        description: form.description,
-        eventDate: selectedDate.toISOString(),
-        dayType: form.dayType,
-        hasEvent: form.hasEvent,
-      };
+async function saveEvent() {
 
-      if (selectedRecord) {
-        await updateCalendarDate(selectedRecord._id, payload);
-      } else {
-        await createCalendarDate(payload);
-      }
-      await loadCalendar();
-      setPanelOpen(false);
-    } catch (submitError) {
-      setMessage(submitError.message);
-    } finally {
-      setSaving(false);
+  setMessage("");
+  setSaving(true);
+
+  try {
+
+    const payload = {
+      title: form.title,
+      description: form.description,
+      eventDate: selectedDate.toISOString(),
+      dayType: form.dayType,
+
+      // Always mark event as existing
+      hasEvent: true
+    };
+
+    if (selectedRecord) {
+
+      await updateCalendarDate(
+        selectedRecord._id,
+        payload
+      );
+
+    } else {
+
+      await createCalendarDate(payload);
+
     }
+
+    await loadCalendar();
+
+    setPanelOpen(false);
+
+    setSelectedRecord(null);
+
+    setIsEditing(false);
+
+  } catch (submitError) {
+
+    setMessage(submitError.message);
+
+  } finally {
+
+    setSaving(false);
+
   }
+
+}
 
   async function confirmDeleteEvent() {
     if (!selectedRecord) {
@@ -158,12 +202,9 @@ export default function CalendarPage() {
     }
     setSaving(true);
     try {
-      await updateCalendarDate(selectedRecord._id, {
-        ...selectedRecord,
-        hasEvent: false,
-        title: "",
-        description: "",
-      });
+await deleteCalendarDate(
+   selectedRecord._id
+);
       await loadCalendar();
       setConfirmDelete(false);
       setPanelOpen(false);
@@ -281,67 +322,102 @@ export default function CalendarPage() {
             <div className="panel-drawer__header">
               <h3>{selectedDate ? selectedDate.toLocaleDateString('en-US', { dateStyle: 'long' }) : "Manage Date"}</h3>
             </div>
-            <form onSubmit={saveEvent} className="calendar-form">
-              <label>
-                Day Classification
-                <select name="dayType" value={form.dayType} onChange={handleInputChange}>
-                  <option value="Working">Regular Working Day</option>
-                  <option value="Holiday">Official School Holiday</option>
-                </select>
-              </label>
+{selectedRecord && !isEditing ? (
 
-              <div className="calendar-checkbox">
-                <input
-                  type="checkbox"
-                  id="hasEvent"
-                  name="hasEvent"
-                  checked={form.hasEvent}
-                  onChange={handleInputChange}
-                />
-                <label htmlFor="hasEvent">Host Special Campus Event on this Date</label>
-              </div>
+  <div className="event-details">
 
-              {form.hasEvent && (
-                <>
-                  <label>
-                    Event Title
-                    <input
-                      type="text"
-                      name="title"
-                      value={form.title}
-                      onChange={handleInputChange}
-                      placeholder="e.g. Final Science Examination, Sports Day"
-                      required
-                    />
-                  </label>
-                  <label>
-                    Event Description
-                    <textarea
-                      name="description"
-                      value={form.description}
-                      onChange={handleInputChange}
-                      placeholder="Add event information notes..."
-                    />
-                  </label>
-                </>
-              )}
+    <h3>{selectedRecord.title}</h3>
 
-              {message && <p className="form-message error">{message}</p>}
+    <p>{selectedRecord.description}</p>
 
-              <div className="panel-drawer__cta">
-                <button type="button" className="secondary" onClick={() => setPanelOpen(false)}>
-                  Cancel
-                </button>
-                {selectedRecord && (
-                  <button type="button" className="secondary alert" onClick={() => setConfirmDelete(true)}>
-                    Clear
-                  </button>
-                )}
-                <button type="submit" className="primary" disabled={saving}>
-                  {saving ? "Saving..." : "Commit Structure"}
-                </button>
-              </div>
-            </form>
+    <div className="event-type">
+      {selectedRecord.dayType}
+    </div>
+
+    <div className="event-actions">
+
+      <button
+        type="button"
+        className="primary"
+        onClick={() => setIsEditing(true)}
+      >
+        Edit Event
+      </button>
+
+      <button
+        type="button"
+        className="secondary delete-btn"
+        onClick={() => setConfirmDelete(true)}
+      >
+        Delete Event
+      </button>
+
+    </div>
+
+  </div>
+
+) : (
+
+  <>
+    <label>
+      Event Title
+      <input
+        type="text"
+        name="title"
+        value={form.title}
+        onChange={handleInputChange}
+        required
+      />
+    </label>
+
+    <label>
+      Description
+      <textarea
+        name="description"
+        value={form.description}
+        onChange={handleInputChange}
+      />
+    </label>
+
+    <label>
+      Day Type
+      <select
+        name="dayType"
+        value={form.dayType}
+        onChange={handleInputChange}
+      >
+        <option value="Working">
+          Working Day
+        </option>
+
+        <option value="Holiday">
+          Holiday
+        </option>
+      </select>
+    </label>
+
+    <div className="panel-drawer__cta">
+
+      <button
+        type="button"
+        className="secondary"
+        onClick={() => setPanelOpen(false)}
+      >
+        Cancel
+      </button>
+
+<button
+  type="button"
+  className="primary"
+  onClick={saveEvent}
+>
+  Save Event
+</button>
+
+    </div>
+  </>
+
+)}
           </div>
         </div>
       )}

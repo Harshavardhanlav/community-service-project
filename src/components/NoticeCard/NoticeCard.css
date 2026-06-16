@@ -50,7 +50,12 @@
     #3b82f6
   );
 }
-
+.flex {
+  display: flex;
+}
+.flex button {
+  width: 193px;
+}
 /* animated shine */
 
 .dashboard-notice::after {

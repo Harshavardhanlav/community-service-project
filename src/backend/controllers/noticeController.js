@@ -14,6 +14,33 @@ const createNotice = async (req, res)=> {
     }
 
 }
+const deleteNotice = async (req, res) => {
+
+   try {
+
+      const notice = await Notice.findByIdAndDelete(req.params.id);
+
+      if (!notice) {
+
+         return res.status(404).json({
+            message: "Notice not found"
+         });
+
+      }
+
+      res.json({
+         message: "Notice deleted successfully"
+      });
+
+   } catch (err) {
+
+      res.status(500).json({
+         message: err.message
+      });
+
+   }
+
+};
 const getNotices = async (req,res) => {
 
    const notices = await Notice.find();
@@ -21,4 +48,41 @@ const getNotices = async (req,res) => {
    res.json(notices);
 
 };
-module.exports = {createNotice, getNotices};
+const updateNotice = async (req, res) => {
+
+   try {
+
+      const notice = await Notice.findByIdAndUpdate(
+         req.params.id,
+         req.body,
+         { new: true }
+      );
+
+      if (!notice) {
+
+         return res.status(404).json({
+            message: "Notice not found"
+         });
+
+      }
+
+      res.json({
+         message: "Notice updated successfully",
+         notice
+      });
+
+   } catch (err) {
+
+      res.status(500).json({
+         message: err.message
+      });
+
+   }
+
+};
+module.exports = {
+   createNotice,
+   getNotices,
+   deleteNotice,
+   updateNotice
+};

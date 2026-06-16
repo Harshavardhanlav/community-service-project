@@ -35,14 +35,6 @@ export function NoticeCard({ notice, onEdit, onDelete }) {
           {notice.priority || 'Medium'}
 
         </span>
-        <div className="flex">
-                  <button onClick={onEdit}>
-  Edit
-</button>
-
-<button onClick={onDelete}>
-  Delete
-</button> </div>
       </div>
     </div>
   );

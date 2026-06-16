@@ -9,7 +9,7 @@ import {
 } from "../../services/api";
 import { StatsCard } from "../../components/StatsCard/StatsCard";
 import { AttendanceChart } from "../../components/AttendanceChart/AttendanceChart";
-import { NoticeCard } from "../../components/NoticeCard/NoticeCard";
+import { NoticeCard } from "../../components/NoticeCard/dNoticeCard";
 import { EventCard } from "../../components/EventCard/EventCard";
 import { EmptyState } from "../../components/EmptyState/EmptyState";
 import { LoadingSpinner } from "../../components/LoadingSpinner/LoadingSpinner";

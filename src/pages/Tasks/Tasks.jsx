@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
-import { createTask, getTasks } from "../../services/api";
+import { createTask, getTasks, deleteTask } from "../../services/api";
 import { EmptyState } from "../../components/EmptyState/EmptyState";
 import { LoadingSpinner } from "../../components/LoadingSpinner/LoadingSpinner";
 import { ConfirmModal } from "../../components/ConfirmModal/ConfirmModal";
 import "./Tasks.css";
-
+import {
+   createTeacher,
+   getTeachers,
+   deleteTeacher
+} from "../../services/api";
 const initialForm = {
   title: "",
   description: "",
@@ -23,10 +27,13 @@ export default function Tasks() {
   const [searchTerm, setSearchTerm] = useState("");
 const [statusFilter, setStatusFilter] = useState("All");
 const [showForm, setShowForm] = useState(false);
+const [teachers, setTeachers] = useState([]);
+const [selectedTask, setSelectedTask] = useState(null);
 
-  useEffect(() => {
-    fetchTasks();
-  }, []);
+useEffect(() => {
+  fetchTasks();
+  fetchTeachers();
+}, []);
 
   async function fetchTasks() {
     setLoading(true);
@@ -66,9 +73,50 @@ await fetchTasks();
     setConfirmAction({ title: "Edit Task", message: "Task editing is not exposed through the backend API yet." });
   }
 
-  function handleDelete(task) {
-    setConfirmAction({ title: "Delete Task", message: "Task deletion is not exposed through the backend API yet." });
+function handleDelete(task) {
+
+   setSelectedTask(task);
+
+   setConfirmAction({
+      title: "Delete Task?",
+      message: `Are you sure you want to delete "${task.title}"?`
+   });
+
+}
+async function fetchTeachers() {
+
+  try {
+
+    const data = await getTeachers();
+
+    setTeachers(data || []);
+
+  } catch (error) {
+
+    console.error(error);
+
   }
+
+}
+async function confirmDeleteAction() {
+
+   try {
+
+      await deleteTask(selectedTask._id);
+
+      await fetchTasks();
+
+      setConfirmAction(null);
+
+      setSelectedTask(null);
+
+   } catch (error) {
+
+      setMessage(error.message);
+
+   }
+
+}
 const filteredTasks = tasks.filter((task) => {
 
   const matchesSearch =
@@ -254,15 +302,35 @@ const filteredTasks = tasks.filter((task) => {
           />
         </label>
 
-        <label>
-          Assigned Teacher
-          <input
-            name="assignedTo"
-            value={form.assignedTo}
-            onChange={handleInputChange}
-            required
-          />
-        </label>
+<label>
+
+  Assigned Teacher
+
+  <select
+    name="assignedTo"
+    value={form.assignedTo}
+    onChange={handleInputChange}
+    required
+  >
+
+    <option value="">
+      Select Teacher
+    </option>
+
+    {teachers.map((teacher) => (
+
+      <option
+        key={teacher._id}
+        value={`${teacher.fullName} (${teacher.teacherID})`}
+      >
+        {teacher.fullName} ({teacher.teacherID})
+      </option>
+
+    ))}
+
+  </select>
+
+</label>
 
         <div className="form-row">
 
@@ -310,15 +378,18 @@ const filteredTasks = tasks.filter((task) => {
   </div>
 
 )}
-      {confirmAction && (
-        <ConfirmModal
-          title={confirmAction.title}
-          message={confirmAction.message}
-          onCancel={() => setConfirmAction(null)}
-          onConfirm={() => setConfirmAction(null)}
-          confirmLabel="OK"
-        />
-      )}
+{confirmAction && (
+  <ConfirmModal
+    title={confirmAction.title}
+    message={confirmAction.message}
+    onCancel={() => {
+      setConfirmAction(null);
+      setSelectedTask(null);
+    }}
+    onConfirm={confirmDeleteAction}
+    confirmLabel="Delete"
+  />
+)}
     </section>
   );
 }

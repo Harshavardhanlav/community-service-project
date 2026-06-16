@@ -81,11 +81,32 @@ const updateCalendarDate = async (req, res) => {
    }
 
 };
+const deleteCalendarDate = async (req,res) => {
 
+   try {
+
+      await CalendarDate.findByIdAndDelete(
+         req.params.id
+      );
+
+      res.json({
+         message:"Deleted"
+      });
+
+   } catch(err) {
+
+      res.status(500).json({
+         message:err.message
+      });
+
+   }
+
+}
 module.exports = {
 
    addCalendarDate,
    getCalendarDates,
-   updateCalendarDate
+   updateCalendarDate,
+   deleteCalendarDate
 
 };

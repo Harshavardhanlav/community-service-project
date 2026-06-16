@@ -1,9 +1,15 @@
 import { useEffect, useState } from "react";
-import { createNotice, getNotices } from "../../services/api";
+import {
+  createNotice,
+  getNotices,
+  updateNotice,
+  deleteNotice
+} from "../../services/api";
 import { NoticeCard } from "../../components/NoticeCard/NoticeCard";
 import { EmptyState } from "../../components/EmptyState/EmptyState";
 import { LoadingSpinner } from "../../components/LoadingSpinner/LoadingSpinner";
 import { ConfirmModal } from "../../components/ConfirmModal/ConfirmModal";
+
 import "./Notices.css";
 
 const initialForm = {
@@ -21,6 +27,9 @@ export default function Notices() {
   const [confirmAction, setConfirmAction] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedNotice, setSelectedNotice] = useState(null);
+
+const [isEdit, setIsEdit] = useState(false);
 
   useEffect(() => {
     fetchNotices();
@@ -48,7 +57,18 @@ export default function Notices() {
     event.preventDefault();
     setMessage("");
     try {
-      await createNotice(form);
+      if (isEdit) {
+
+   await updateNotice(
+      selectedNotice._id,
+      form
+   );
+
+} else {
+
+   await createNotice(form);
+
+}
       setForm(initialForm);
       setShowForm(false); // Smoothly dismiss modal view upon processing save successfully
       await fetchNotices();
@@ -57,13 +77,52 @@ export default function Notices() {
     }
   }
 
-  function handleEdit(notice) {
-    setConfirmAction({ title: "Edit Notice", message: "Editing notices is not exposed through the backend API yet." });
-  }
+function handleEdit(notice) {
 
-  function handleDelete(notice) {
-    setConfirmAction({ title: "Delete Notice", message: "Deleting notices is not exposed through the backend API yet." });
-  }
+   setSelectedNotice(notice);
+
+   setForm({
+      title: notice.title,
+      message: notice.message,
+      priority: notice.priority
+   });
+
+   setIsEdit(true);
+
+   setShowForm(true);
+
+}
+async function confirmDeleteAction() {
+
+   try {
+
+      await deleteNotice(
+         selectedNotice._id
+      );
+
+      await fetchNotices();
+
+      setConfirmAction(null);
+
+      setSelectedNotice(null);
+
+   } catch (error) {
+
+      setMessage(error.message);
+
+   }
+
+}
+function handleDelete(notice) {
+
+   setSelectedNotice(notice);
+
+   setConfirmAction({
+      title: "Delete Notice?",
+      message: `Delete "${notice.title}" ?`
+   });
+
+}
 
   const filteredNotices = notices.filter((notice) =>
     notice.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -215,16 +274,18 @@ export default function Notices() {
           </div>
         </div>
       )}
-
-      {confirmAction && (
-        <ConfirmModal
-          title={confirmAction.title}
-          message={confirmAction.message}
-          onCancel={() => setConfirmAction(null)}
-          onConfirm={() => setConfirmAction(null)}
-          confirmLabel="OK"
-        />
-      )}
+{confirmAction && selectedNotice && (
+  <ConfirmModal
+    title={confirmAction.title}
+    message={confirmAction.message}
+    onCancel={() => {
+      setConfirmAction(null);
+      setSelectedNotice(null);
+    }}
+    onConfirm={confirmDeleteAction}
+    confirmLabel="Delete"
+  />
+)}
     </section>
   );
 }

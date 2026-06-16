@@ -40,14 +40,64 @@ export async function createTeacher(teacherData) {
 export async function getNotices() {
   return request("/notices");
 }
+export async function deleteTask(id) {
 
+   const response = await fetch(
+      `http://localhost:5000/tasks/${id}`,
+      {
+         method: "DELETE"
+      }
+   );
+
+   return response.json();
+
+}
+export async function deleteNotice(id) {
+
+   const response = await fetch(
+      `http://localhost:5000/notices/${id}`,
+      {
+         method: "DELETE"
+      }
+   );
+
+   return response.json();
+
+}
+export async function updateNotice(id, noticeData) {
+
+   const response = await fetch(
+      `http://localhost:5000/notices/${id}`,
+      {
+         method: "PUT",
+         headers: {
+            "Content-Type": "application/json"
+         },
+         body: JSON.stringify(noticeData)
+      }
+   );
+
+   return response.json();
+
+}
 export async function createNotice(noticeData) {
   return request("/notices/create-notice", {
     method: "POST",
     body: JSON.stringify(noticeData),
   });
 }
+export async function deleteCalendarDate(id) {
 
+   const response = await fetch(
+      `http://localhost:5000/calendar/${id}`,
+      {
+         method:"DELETE"
+      }
+   );
+
+   return response.json();
+
+}
 export async function getCalendarDates() {
   return request("/calendar");
 }
