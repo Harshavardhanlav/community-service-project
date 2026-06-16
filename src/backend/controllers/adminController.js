@@ -68,7 +68,8 @@ const adminLogin = async (req,res) => {
    })
  }
  res.json({
-   message:"login Successful"
+   message:"login Successful",
+   success: true
  })
 }
 module.exports = {createAdmin, adminLogin, checkAdmin} ;

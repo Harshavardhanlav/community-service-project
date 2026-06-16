@@ -1,7 +1,19 @@
 const Notice = require("../models/noticeSchema");
+const { createActivityLog } = require("./activityLogController");
+
 const createNotice = async (req, res)=> {
     try{
         const notice = await Notice.create(req.body);
+        
+        // Log the activity
+        await createActivityLog(
+          "Created",
+          "Notice",
+          notice._id,
+          notice.title,
+          `Notice "${notice.title}" was created with priority ${notice.priority}`
+        );
+        
         res.status(201).json({
             message:"notice created successfully",
             notice
@@ -27,6 +39,15 @@ const deleteNotice = async (req, res) => {
          });
 
       }
+
+      // Log the activity
+      await createActivityLog(
+        "Deleted",
+        "Notice",
+        notice._id,
+        notice.title,
+        `Notice "${notice.title}" was deleted`
+      );
 
       res.json({
          message: "Notice deleted successfully"
@@ -65,6 +86,15 @@ const updateNotice = async (req, res) => {
          });
 
       }
+
+      // Log the activity
+      await createActivityLog(
+        "Updated",
+        "Notice",
+        notice._id,
+        notice.title,
+        `Notice "${notice.title}" was updated`
+      );
 
       res.json({
          message: "Notice updated successfully",

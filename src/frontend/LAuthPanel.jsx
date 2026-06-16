@@ -2,9 +2,45 @@ import { useState } from "react";
 import Spline from "@splinetool/react-spline";
 import "./AuthPanel.css";
 
-export function LAuthPanel() {
+export function LAuthPanel({ onLoginSuccess }) {
 
    const [mode, setMode] = useState("Admin Login");
+   const [adminID, setAdminID] = useState("");
+   const [password, setPassword] = useState("");
+   const [error, setError] = useState("");
+
+   const handleAdminLogin = async () => {
+      setError("");
+      try {
+         const response = await fetch(
+            "http://localhost:5000/admin/admin-login",
+            {
+               method: "POST",
+               headers: {
+                  "Content-Type": "application/json"
+               },
+               body: JSON.stringify({
+                  username: adminID,
+                  password: password
+               })
+            }
+         );
+
+         const data = await response.json();
+
+         if (data.success || data.message === "login Successful") {
+            // Save admin session to localStorage
+            localStorage.setItem("adminLoggedIn", "true");
+            localStorage.setItem("adminID", adminID);
+            // Call the callback to refresh app state
+            if (onLoginSuccess) onLoginSuccess();
+         } else {
+            setError(data.message || "Login failed");
+         }
+      } catch (err) {
+         setError("Connection error: " + err.message);
+      }
+   };
 
    return (
 
@@ -62,17 +98,23 @@ export function LAuthPanel() {
                               : "Teacher ID"
                         }
                         className="auth-input"
+                        value={adminID}
+                        onChange={(e) => setAdminID(e.target.value)}
                      />
 
                      <input
                         type="password"
                         placeholder="Password"
                         className="auth-input"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                      />
 
                   </div>
 
-                  <button className="auth-submit-btn">
+                  {error && <p style={{ color: "red", fontSize: "12px", marginBottom: "10px" }}>{error}</p>}
+
+                  <button className="auth-submit-btn" onClick={mode === "Admin Login" ? handleAdminLogin : () => {}}>
                      Login
                   </button>
 

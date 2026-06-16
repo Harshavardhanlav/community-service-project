@@ -65,18 +65,33 @@ export default function ActivityLogs() {
                 const typeLower = (entry.type || "").toLowerCase();
                 const descLower = (entry.description || "").toLowerCase();
 
-                if (typeLower.includes("notice") || descLower.includes("notice")) {
+                // Determine emoji and color based on action type
+                if (typeLower.includes("deleted")) {
+                  badgeClass = "activity-badge--danger";
+                  emoji = "🗑️";
+                } else if (typeLower.includes("updated")) {
                   badgeClass = "activity-badge--warning";
-                  emoji = "📢";
-                } else if (typeLower.includes("teacher") || typeLower.includes("add")) {
-                  badgeClass = "activity-badge--success";
-                  emoji = "👨‍🏫";
-                } else if (typeLower.includes("attendance") || typeLower.includes("mark")) {
+                  emoji = "✏️";
+                } else if (typeLower.includes("created") || typeLower.includes("added")) {
                   badgeClass = "activity-badge--success";
                   emoji = "✅";
-                } else if (typeLower.includes("task") || typeLower.includes("assign")) {
-                  badgeClass = "activity-badge--info";
-                  emoji = "📝";
+                }
+
+                // Determine entity-specific emoji
+                if (typeLower.includes("notice")) {
+                  badgeClass = typeLower.includes("deleted") 
+                    ? "activity-badge--danger" 
+                    : typeLower.includes("updated")
+                    ? "activity-badge--warning"
+                    : "activity-badge--warning";
+                  emoji = "📢";
+                } else if (typeLower.includes("teacher")) {
+                  emoji = "👨‍🏫";
+                } else if (typeLower.includes("task")) {
+                  emoji = "✅";
+                } else if (typeLower.includes("attendance")) {
+                  badgeClass = "activity-badge--success";
+                  emoji = "📋";
                 }
 
                 return (

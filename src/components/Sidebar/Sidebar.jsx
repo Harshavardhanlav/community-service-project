@@ -17,7 +17,9 @@ export function Sidebar() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    navigate("/");
+    localStorage.removeItem("adminLoggedIn");
+    localStorage.removeItem("adminID");
+    window.location.href = "/";
   };
 
   return (
@@ -47,6 +49,26 @@ export function Sidebar() {
           </NavLink>
         ))}
       </nav>
+
+      <div style={{ marginTop: "auto", paddingTop: "20px", borderTop: "1px solid #edf2f0" }}>
+        <button
+          type="button"
+          onClick={handleLogout}
+          style={{
+            width: "100%",
+            padding: "10px",
+            backgroundColor: "#fee2e2",
+            color: "#dc2626",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontWeight: "600",
+            fontSize: "14px"
+          }}
+        >
+          🚪 Logout
+        </button>
+      </div>
     </aside>
   );
 }

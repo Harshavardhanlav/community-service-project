@@ -213,11 +213,16 @@ function handleDelete(notice) {
         <div className="notice-modal">
           <div className="notice-modal-content card">
             <div className="notice-modal-header">
-              <h3>Create Notice</h3>
+              <h3>{isEdit ? "Edit Notice" : "Create Notice"}</h3>
               <button
                 type="button"
                 className="secondary"
-                onClick={() => setShowForm(false)}
+                onClick={() => {
+                  setShowForm(false);
+                  setIsEdit(false);
+                  setSelectedNotice(null);
+                  setForm(initialForm);
+                }}
               >
                 Close
               </button>
@@ -268,7 +273,7 @@ function handleDelete(notice) {
                 type="submit"
                 className="primary"
               >
-                Publish Notice
+                {isEdit ? "Update Notice" : "Publish Notice"}
               </button>
             </form>
           </div>

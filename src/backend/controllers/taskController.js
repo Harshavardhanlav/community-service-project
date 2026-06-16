@@ -1,7 +1,19 @@
 const Task = require("../models/taskSchema");
+const { createActivityLog } = require("./activityLogController");
+
 const createTask = async (req, res)=> {
     try{
         const task = await Task.create(req.body);
+        
+        // Log the activity
+        await createActivityLog(
+          "Created",
+          "Task",
+          task._id,
+          task.title,
+          `Task "${task.title}" was assigned to ${task.assignedTo}`
+        );
+        
         res.status(201).json({
             message:"event created successfully",
             task
@@ -28,6 +40,15 @@ const deleteTask = async (req, res) => {
 
       }
 
+      // Log the activity
+      await createActivityLog(
+        "Deleted",
+        "Task",
+        task._id,
+        task.title,
+        `Task "${task.title}" was deleted`
+      );
+
       res.json({
          message: "Task deleted successfully"
       });
@@ -48,8 +69,52 @@ const getTasks = async (req,res) => {
    res.json(tasks);
 
 };
+
+const updateTask = async (req, res) => {
+
+   try {
+
+      const task = await Task.findByIdAndUpdate(
+         req.params.id,
+         req.body,
+         { new: true }
+      );
+
+      if (!task) {
+
+         return res.status(404).json({
+            message: "Task not found"
+         });
+
+      }
+
+      // Log the activity
+      await createActivityLog(
+        "Updated",
+        "Task",
+        task._id,
+        task.title,
+        `Task "${task.title}" was updated`
+      );
+
+      res.json({
+         message: "Task updated successfully",
+         task
+      });
+
+   } catch (err) {
+
+      res.status(500).json({
+         message: err.message
+      });
+
+   }
+
+};
+
 module.exports = {
    createTask,
    getTasks,
-   deleteTask
+   deleteTask,
+   updateTask
 };

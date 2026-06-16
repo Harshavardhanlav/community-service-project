@@ -1,14 +1,9 @@
 import { useEffect, useState } from "react";
-import { createTask, getTasks, deleteTask } from "../../services/api";
+import { createTask, getTasks, deleteTask, updateTask, getTeachers } from "../../services/api";
 import { EmptyState } from "../../components/EmptyState/EmptyState";
 import { LoadingSpinner } from "../../components/LoadingSpinner/LoadingSpinner";
 import { ConfirmModal } from "../../components/ConfirmModal/ConfirmModal";
 import "./Tasks.css";
-import {
-   createTeacher,
-   getTeachers,
-   deleteTeacher
-} from "../../services/api";
 const initialForm = {
   title: "",
   description: "",
@@ -29,6 +24,7 @@ const [statusFilter, setStatusFilter] = useState("All");
 const [showForm, setShowForm] = useState(false);
 const [teachers, setTeachers] = useState([]);
 const [selectedTask, setSelectedTask] = useState(null);
+const [isEditing, setIsEditing] = useState(false);
 
 useEffect(() => {
   fetchTasks();
@@ -57,20 +53,32 @@ useEffect(() => {
     event.preventDefault();
     setMessage("");
     try {
-await createTask(form);
-
-setForm(initialForm);
-
-setShowForm(false);
-
-await fetchTasks();
+      if (isEditing) {
+        await updateTask(selectedTask._id, form);
+      } else {
+        await createTask(form);
+      }
+      setForm(initialForm);
+      setShowForm(false);
+      setIsEditing(false);
+      setSelectedTask(null);
+      await fetchTasks();
     } catch (submitError) {
       setMessage(submitError.message);
     }
   }
 
   function handleEdit(task) {
-    setConfirmAction({ title: "Edit Task", message: "Task editing is not exposed through the backend API yet." });
+    setSelectedTask(task);
+    setForm({
+      title: task.title || "",
+      description: task.description || "",
+      assignedTo: task.assignedTo || "",
+      deadline: task.deadline || "",
+      status: task.status || "Pending"
+    });
+    setIsEditing(true);
+    setShowForm(true);
   }
 
 function handleDelete(task) {
@@ -267,12 +275,17 @@ const filteredTasks = tasks.filter((task) => {
 
       <div className="task-modal-header">
 
-        <h3>Create Task</h3>
+        <h3>{isEditing ? "Edit Task" : "Create Task"}</h3>
 
         <button
           type="button"
           className="secondary"
-          onClick={() => setShowForm(false)}
+          onClick={() => {
+            setShowForm(false);
+            setIsEditing(false);
+            setSelectedTask(null);
+            setForm(initialForm);
+          }}
         >
           Close
         </button>
@@ -368,7 +381,7 @@ const filteredTasks = tasks.filter((task) => {
           type="submit"
           className="primary"
         >
-          Create Task
+          {isEditing ? "Update Task" : "Create Task"}
         </button>
 
       </form>

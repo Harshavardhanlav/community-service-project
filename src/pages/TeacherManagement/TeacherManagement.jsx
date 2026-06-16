@@ -8,7 +8,8 @@ import "./TeacherManagement.css";
 import {
    createTeacher,
    getTeachers,
-   deleteTeacher
+   deleteTeacher,
+   updateTeacher
 } from "../../services/api";
 const initialForm = {
   teacherID: "",
@@ -95,13 +96,12 @@ export default function TeacherManagement() {
   async function handleSubmit(event) {
     event.preventDefault();
     setMessage("");
-    if (isEdit) {
-      setMessage("Teacher update is not available via backend API.");
-      return;
-    }
-
     try {
-      await createTeacher(form);
+      if (isEdit) {
+        await updateTeacher(selectedTeacher._id, form);
+      } else {
+        await createTeacher(form);
+      }
       await fetchTeachers();
       setPanelOpen(false);
       setForm(initialForm);

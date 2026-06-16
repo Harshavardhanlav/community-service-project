@@ -11,6 +11,7 @@ const calenderRoutes = require("./routes/calenderRoutes")
 const attendaceRoutes = require("./routes/attendanceRoutes");
 const dashboardRoutes =
 require("./routes/dashboardRoutes");
+const activityLogRoutes = require("./routes/activityLogRoutes");
 dotenv.config();
 ConnectDB();
 console.log(process.env.MONGO_URI);
@@ -27,6 +28,7 @@ app.use(
    "/dashboard",
    dashboardRoutes
 );
+app.use("/activity-logs", activityLogRoutes);
 app.get("/", (req, res)=> {
     res.send("Backend is running sucessfully");
 })

@@ -104,6 +104,12 @@
   color: #c2410c;
 }
 
+/* Type 4: Danger / Delete actions (Red Theme) */
+.activity-badge--danger {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
 /* 3D Emoji Drop Shadow effect matching your Sidebar */
 .activity-badge i {
   font-style: normal;

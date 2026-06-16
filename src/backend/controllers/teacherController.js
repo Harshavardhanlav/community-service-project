@@ -1,8 +1,19 @@
 const Teacher = require("../models/teacherSchema");
+const { createActivityLog } = require("./activityLogController");
 
 const createTeacher = async (req,res) => {
     try{
         const teacher = await Teacher.create(req.body);
+        
+        // Log the activity
+        await createActivityLog(
+          "Created",
+          "Teacher",
+          teacher._id,
+          teacher.fullName,
+          `Teacher ${teacher.fullName} (ID: ${teacher.teacherID}) was created`
+        );
+        
         res.status(201).json({
             message:"teacher created successfully",
             teacher
@@ -61,6 +72,15 @@ const deleteTeacher = async (req, res) => {
          });
       }
 
+      // Log the activity
+      await createActivityLog(
+        "Deleted",
+        "Teacher",
+        teacher._id,
+        teacher.fullName,
+        `Teacher ${teacher.fullName} (ID: ${teacher.teacherID}) was deleted`
+      );
+
       res.json({
          message: "Teacher deleted successfully"
       });
@@ -73,9 +93,53 @@ const deleteTeacher = async (req, res) => {
       });
    }
 };
+
+const updateTeacher = async (req, res) => {
+
+   try {
+
+      const teacher = await Teacher.findByIdAndUpdate(
+         req.params.id,
+         req.body,
+         { new: true }
+      );
+
+      if (!teacher) {
+
+         return res.status(404).json({
+            message: "Teacher not found"
+         });
+
+      }
+
+      // Log the activity
+      await createActivityLog(
+        "Updated",
+        "Teacher",
+        teacher._id,
+        teacher.fullName,
+        `Teacher ${teacher.fullName} (ID: ${teacher.teacherID}) was updated`
+      );
+
+      res.json({
+         message: "Teacher updated successfully",
+         teacher
+      });
+
+   } catch (err) {
+
+      res.status(500).json({
+         message: err.message
+      });
+
+   }
+
+};
+
 module.exports = {
    createTeacher,
    teacherLogin,
    getTeachers,
-   deleteTeacher
+   deleteTeacher,
+   updateTeacher
 };

@@ -1,4 +1,5 @@
 const Calendar = require("../models/calenderSchema");
+const { createActivityLog } = require("./activityLogController");
 
 const addCalendarDate = async (req, res) => {
 
@@ -19,6 +20,16 @@ const addCalendarDate = async (req, res) => {
       }
 
       const newDate = await Calendar.create(req.body);
+
+      // Log the activity
+      const eventTitle = newDate.title || "Calendar Event";
+      await createActivityLog(
+        "Created",
+        "Event",
+        newDate._id,
+        eventTitle,
+        `Event "${eventTitle}" was created on ${new Date(eventDate).toLocaleDateString()}`
+      );
 
       res.status(201).json({
          message: "Calendar date added",
@@ -67,6 +78,16 @@ const updateCalendarDate = async (req, res) => {
 
       );
 
+      // Log the activity
+      const eventTitle = updatedDate.title || "Calendar Event";
+      await createActivityLog(
+        "Updated",
+        "Event",
+        updatedDate._id,
+        eventTitle,
+        `Event "${eventTitle}" was updated`
+      );
+
       res.status(200).json({
          message: "Calendar updated",
          updatedDate
@@ -77,7 +98,6 @@ const updateCalendarDate = async (req, res) => {
       res.status(500).json({
          message: err.message
       });
-
    }
 
 };
@@ -85,8 +105,18 @@ const deleteCalendarDate = async (req,res) => {
 
    try {
 
-      await CalendarDate.findByIdAndDelete(
+      const event = await Calendar.findByIdAndDelete(
          req.params.id
+      );
+
+      // Log the activity
+      const eventTitle = event.title || "Calendar Event";
+      await createActivityLog(
+        "Deleted",
+        "Event",
+        event._id,
+        eventTitle,
+        `Event "${eventTitle}" was deleted`
       );
 
       res.json({

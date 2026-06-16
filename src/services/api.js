@@ -37,6 +37,13 @@ export async function createTeacher(teacherData) {
   });
 }
 
+export async function updateTeacher(id, teacherData) {
+  return request(`/teachers/update/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(teacherData),
+  });
+}
+
 export async function getNotices() {
   return request("/notices");
 }
@@ -143,6 +150,13 @@ export async function createTask(taskData) {
   });
 }
 
+export async function updateTask(id, taskData) {
+  return request(`/tasks/update/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(taskData),
+  });
+}
+
 export async function getAttendanceRecords() {
   return request("/attendance");
 }
@@ -152,46 +166,14 @@ export async function getTeacherAttendanceReport(teacherId, month, year) {
 }
 
 export async function getActivityLogs() {
-  const [teachers, notices, tasks, attendance] = await Promise.all([
-    getTeachers(),
-    getNotices(),
-    getTasks(),
-    getAttendanceRecords(),
-  ]);
-
-  const teacherLogs = teachers.map((teacher) => ({
-    id: teacher._id || teacher.teacherID,
-    type: "Teacher Added",
-    title: teacher.fullName,
-    description: `Teacher ID ${teacher.teacherID} added`,
-    date: teacher.createdAt || new Date().toISOString(),
+  const logs = await request("/activity-logs");
+  
+  // Transform logs to match the frontend display format
+  return logs.map((log) => ({
+    id: log._id,
+    type: `${log.action} ${log.entityType}`,
+    title: log.entityName,
+    description: log.description,
+    date: log.timestamp || new Date().toISOString(),
   }));
-
-  const noticeLogs = notices.map((notice) => ({
-    id: notice._id,
-    type: "Notice Created",
-    title: notice.title,
-    description: `Priority ${notice.priority}`,
-    date: notice.createdAt || new Date().toISOString(),
-  }));
-
-  const taskLogs = tasks.map((task) => ({
-    id: task._id,
-    type: "Task Assigned",
-    title: task.title,
-    description: `Assigned to ${task.assignedTo}`,
-    date: task.createdAt || new Date().toISOString(),
-  }));
-
-  const attendanceLogs = attendance.map((record) => ({
-    id: record._id,
-    type: "Attendance Marked",
-    title: record.teacherId,
-    description: `Status ${record.status}`,
-    date: record.attendanceDate || record.createdAt || new Date().toISOString(),
-  }));
-
-  return [...teacherLogs, ...noticeLogs, ...taskLogs, ...attendanceLogs].sort(
-    (a, b) => new Date(b.date) - new Date(a.date)
-  );
 }

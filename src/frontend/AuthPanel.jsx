@@ -3,36 +3,51 @@ import { useState } from "react";
 import Spline from "@splinetool/react-spline";
 import { School } from "lucide-react";
 
-export function AuthPanel() {
+export function AuthPanel({ onRegisterSuccess }) {
    const [Username, SetUsername] = useState("");
    const [Email, SetEmail] = useState("");
    const [Password, SetPassword] = useState("");
    const [Schoolname, SetSchool] = useState("");
-const handleRegister = async () => {
+   const [error, setError] = useState("");
 
-   const response = await fetch(
-      "http://localhost:5000/admin/create-admin",
-      {
-         method: "POST",
+   const handleRegister = async () => {
+      setError("");
+      try {
+         const response = await fetch(
+            "http://localhost:5000/admin/create-admin",
+            {
+               method: "POST",
 
-         headers: {
-            "Content-Type": "application/json"
-         },
+               headers: {
+                  "Content-Type": "application/json"
+               },
 
-         body: JSON.stringify({
-            schoolName: Schoolname,
-            username: Username,
-            email: Email,
-            password: Password
-         })
+               body: JSON.stringify({
+                  schoolName: Schoolname,
+                  username: Username,
+                  email: Email,
+                  password: Password
+               })
+            }
+         );
+
+         const data = await response.json();
+
+         console.log(data);
+
+         if (data.message === "admin created successfully" || data.success) {
+            // Save admin session to localStorage
+            localStorage.setItem("adminLoggedIn", "true");
+            localStorage.setItem("adminID", Username);
+            // Call the callback to refresh app state
+            if (onRegisterSuccess) onRegisterSuccess();
+         } else {
+            setError(data.message || "Registration failed");
+         }
+      } catch (err) {
+         setError("Connection error: " + err.message);
       }
-   );
-
-   const data = await response.json();
-
-   console.log(data);
-
-} 
+   } 
 
    return (
 
@@ -92,6 +107,8 @@ const handleRegister = async () => {
    onChange={(e) => SetPassword(e.target.value)}
 />
                   </div>
+
+                  {error && <p style={{ color: "red", fontSize: "12px", marginBottom: "10px" }}>{error}</p>}
 
                   <button className="auth-submit-btn" onClick={handleRegister}>
                      Create Workspace
