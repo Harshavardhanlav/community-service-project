@@ -46,7 +46,7 @@ export default function Attendance() {
   return (
     <section className="attendance-page">
       <div className="attendance-page__header card">
-        <div>
+        <div className="page-header-block">
           <h2>📲Attendance Records</h2>
           <p>Review attendance status for teachers across the school.</p>
         </div>
@@ -54,7 +54,7 @@ export default function Attendance() {
 
       <div className="attendance-page__toolbar card">
         <label>
-          Search
+          🔍Search
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Teacher ID or status" />
         </label>
         <label>

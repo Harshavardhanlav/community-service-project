@@ -133,7 +133,7 @@ async function confirmDeleteAction() {
   return (
     <section className="teacher-management-page">
       <div className="teacher-management-header card">
-        <div>
+        <div className="page-header-block">
           <h2>👨‍🏫Teacher Management</h2>
           <p>Keep teacher records up to date and add new staff profiles.</p>
         </div>

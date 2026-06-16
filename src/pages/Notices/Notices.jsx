@@ -132,7 +132,7 @@ function handleDelete(notice) {
   return (
     <section className="notices-page">
       <div className="notices-page__header">
-        <div>
+        <div className="page-header-block">
           <h2>🔔 Notices</h2>
           <p>View and manage all published notices.</p>
         </div>
