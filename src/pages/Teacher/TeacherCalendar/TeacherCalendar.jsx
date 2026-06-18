@@ -11,12 +11,10 @@ export default function TeacherCalendar() {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  // Helper function to parse date safely without timezone issues
+  // Helper function to parse date safely using local date values
   const getLocalDate = (dateString) => {
-    // Parse the date and use UTC getters (which have the correct date values)
-    // Then create a new Date using those UTC values as local time
     const date = new Date(dateString);
-    return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   };
 
   useEffect(() => {

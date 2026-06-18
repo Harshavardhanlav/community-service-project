@@ -114,7 +114,7 @@ const updateTeacher = async (req, res) => {
       const teacher = await Teacher.findByIdAndUpdate(
          req.params.id,
          req.body,
-         { new: true }
+         { returnDocument: 'after' }
       );
 
       if (!teacher) {

@@ -1,6 +1,72 @@
 const Attendance = require("../models/attendanceSchema");
+const Teacher = require("../models/teacherSchema");
 
 const Calendar = require("../models/calenderSchema");
+
+const ATTENDANCE_CUTOFF_HOUR = 9;
+const ATTENDANCE_CUTOFF_MINUTE = 0;
+
+const getStartOfDay = (date = new Date()) =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+
+const getEndOfDay = (date = new Date()) =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999);
+
+const hasCutoffPassed = () => {
+  const now = new Date();
+  if (now.getHours() > ATTENDANCE_CUTOFF_HOUR) return true;
+  if (now.getHours() === ATTENDANCE_CUTOFF_HOUR) {
+    return now.getMinutes() >= ATTENDANCE_CUTOFF_MINUTE;
+  }
+  return false;
+};
+
+const autoMarkAbsentForToday = async () => {
+  if (!hasCutoffPassed()) return;
+
+  const today = new Date();
+  const startOfDay = getStartOfDay(today);
+  const endOfDay = getEndOfDay(today);
+
+  if (today.getDay() === 0) return;
+
+  const existingCalendar = await Calendar.findOne({
+    eventDate: {
+      $gte: startOfDay,
+      $lte: endOfDay,
+    },
+  });
+
+  if (existingCalendar && existingCalendar.dayType === "Holiday") return;
+
+  const allTeachers = await Teacher.find();
+  if (!allTeachers.length) return;
+
+  const todayAttendance = await Attendance.find({
+    attendanceDate: {
+      $gte: startOfDay,
+      $lte: endOfDay,
+    },
+  });
+
+  const presentTeacherIds = new Set(todayAttendance.map((record) => record.teacherId));
+  const absentTeachers = allTeachers.filter(
+    (teacher) => !presentTeacherIds.has(teacher.teacherID)
+  );
+
+  if (!absentTeachers.length) return;
+
+  const absentRecords = absentTeachers.map((teacher) => ({
+    teacherId: teacher.teacherID,
+    teacherName: teacher.fullName,
+    attendanceDate: new Date(),
+    status: "Absent",
+    latitude: null,
+    longitude: null,
+  }));
+
+  await Attendance.insertMany(absentRecords);
+};
 
 const markAttendance = async (req, res) => {
 
@@ -92,7 +158,14 @@ const getAttendance = async (req, res) => {
 
    try {
 
-      const attendance = await Attendance.find();
+      await autoMarkAbsentForToday();
+
+      const { teacherId } = req.query;
+
+      const filter = {};
+      if (teacherId) filter.teacherId = teacherId;
+
+      const attendance = await Attendance.find(filter).sort({ attendanceDate: -1 });
 
       res.status(200).json(attendance);
 
@@ -109,6 +182,7 @@ const getAttendance = async (req, res) => {
 const getTodaySummary = async (req, res) => {
 
    try {
+      await autoMarkAbsentForToday();
 
       const today = new Date();
 
@@ -167,90 +241,81 @@ const getTodaySummary = async (req, res) => {
 const getTeacherAttendanceReport = async (req, res) => {
 
    try {
+      await autoMarkAbsentForToday();
 
       const { teacherId } = req.params;
 
-const month = parseInt(req.query.month);
+      const month = parseInt(req.query.month) || new Date().getMonth();
 
-const year = parseInt(req.query.year);
+      const year = parseInt(req.query.year) || new Date().getFullYear();
 
-const currentMonth = month;
+      // Validate inputs
+      if (!teacherId) {
+         return res.status(400).json({ message: "Teacher ID is required" });
+      }
 
-const currentYear = year;
+      if (isNaN(month) || month < 0 || month > 11) {
+         return res.status(400).json({ message: "Invalid month" });
+      }
 
-      const startDate = new Date(currentYear, currentMonth, 1);
-      const endDate = new Date(
-         currentYear,
-         currentMonth + 1,
-         0,
-         23,
-         59,
-         59,
-         999
-);
+      if (isNaN(year) || year < 2020) {
+         return res.status(400).json({ message: "Invalid year" });
+      }
 
+      const startDate = new Date(year, month, 1);
+      const startDate_Normalized = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 0, 0, 0, 0);
+      
+      // Get last day of month
+      const lastDayOfMonth = new Date(year, month + 1, 0);
+      const endDate_Normalized = new Date(lastDayOfMonth.getFullYear(), lastDayOfMonth.getMonth(), lastDayOfMonth.getDate(), 23, 59, 59, 999);
+
+      // Count present days for this teacher
       const presentDays = await Attendance.countDocuments({
-
-         teacherId,
-
+         teacherId: teacherId,
          attendanceDate: {
-            $gte: startDate,
-            $lte: endDate
+            $gte: startDate_Normalized,
+            $lte: endDate_Normalized
          }
-
       });
 
+      // Count holidays in this period
       const holidays = await Calendar.countDocuments({
-
          dayType: "Holiday",
-
          eventDate: {
-            $gte: startDate,
-            $lte: endDate
+            $gte: startDate_Normalized,
+            $lte: endDate_Normalized
          }
-
       });
 
-      const totalDays = endDate.getDate();
+      const totalDays = lastDayOfMonth.getDate();
 
       let sundays = 0;
 
       for(let i = 1; i <= totalDays; i++){
-
-         const day = new Date(
-            currentYear,
-            currentMonth,
-            i
-         ).getDay();
-
+         const day = new Date(year, month, i).getDay();
          if(day === 0){
             sundays++;
          }
-
       }
 
-      const totalWorkingDays =
-         totalDays - sundays - holidays;
-
-      const attendancePercentage =
-         ((presentDays / totalWorkingDays) * 100).toFixed(2);
+      const totalWorkingDays = totalDays - sundays - holidays;
+      
+      // Avoid division by zero
+      const attendancePercentage = totalWorkingDays > 0 
+         ? ((presentDays / totalWorkingDays) * 100).toFixed(2)
+         : 0;
 
       res.status(200).json({
-
          teacherId,
-
-         presentDays,
-
-         totalWorkingDays,
-
-         attendancePercentage
-
+         presentDays: presentDays || 0,
+         totalWorkingDays: totalWorkingDays || 0,
+         attendancePercentage: parseFloat(attendancePercentage)
       });
 
    } catch(err){
 
       res.status(500).json({
-         message: err.message
+         message: err.message || "Error fetching attendance report"
       });
 
    }
@@ -262,5 +327,6 @@ module.exports = {
    markAttendance,
    getAttendance,
    getTeacherAttendanceReport,
-   getTodaySummary
+   getTodaySummary,
+   autoMarkAbsentForToday
 };

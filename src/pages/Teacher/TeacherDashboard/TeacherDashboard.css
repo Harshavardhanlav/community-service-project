@@ -80,3 +80,6 @@
     grid-template-columns: 1fr;
   }
 }
+.dashboard-page__stats label{
+  font-size: 12px;
+}

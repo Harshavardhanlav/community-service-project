@@ -44,6 +44,16 @@ export default function CalendarPage() {
   const [panelOpen, setPanelOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedRecord, setSelectedRecord] = useState(null);
+
+  const toDateOnlyISOString = (date) => {
+    const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0, 0));
+    return utcDate.toISOString();
+  };
+
+  const getLocalDate = (dateString) => {
+    const date = new Date(dateString);
+    return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+  };
   const [form, setForm] = useState({ title: "", description: "", dayType: "Working", hasEvent: false });
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [message, setMessage] = useState("");
@@ -97,7 +107,9 @@ async function loadCalendar() {
 
     for (let day = 1; day <= totalDays; day++) {
       const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-      const record = events.find((item) => new Date(item.eventDate).toDateString() === date.toDateString());
+      const record = events.find(
+        (item) => getLocalDate(item.eventDate).toDateString() === date.toDateString()
+      );
       days.push({ day, date, record, empty: false, key: date.toISOString() });
     }
 
@@ -155,11 +167,11 @@ async function saveEvent() {
     const payload = {
       title: form.title,
       description: form.description,
-      eventDate: selectedDate.toISOString(),
+      eventDate: toDateOnlyISOString(selectedDate),
       dayType: form.dayType,
 
       // Always mark event as existing
-      hasEvent: true
+      hasEvent: true,
     };
 
     if (selectedRecord) {

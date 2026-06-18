@@ -29,15 +29,21 @@ export default function AttendanceReports() {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [reportError, setReportError] = useState("");
 
   useEffect(() => {
     async function loadTeachers() {
       try {
+        setLoading(true);
         const data = await getTeachers();
-        setTeachers(data || []);
-        setSelectedTeacher(data?.[0]?.teacherID || "");
+        if (data && Array.isArray(data) && data.length > 0) {
+          setTeachers(data);
+          setSelectedTeacher(data[0]?.teacherID || "");
+        } else {
+          setError("No teachers found in the system");
+        }
       } catch (fetchError) {
-        setError(fetchError.message);
+        setError(fetchError.message || "Failed to load teachers");
       } finally {
         setLoading(false);
       }
@@ -46,15 +52,20 @@ export default function AttendanceReports() {
   }, []);
 
   useEffect(() => {
-    if (!selectedTeacher) return;
+    if (!selectedTeacher || !month || year === undefined) return;
+    
     async function loadReport() {
-      setError("");
+      setReportError("");
+      setReport(null);
       try {
         const data = await getTeacherAttendanceReport(selectedTeacher, month, year);
-        setReport(data);
+        if (data) {
+          setReport(data);
+        } else {
+          setReportError("No attendance data available for selected period");
+        }
       } catch (fetchError) {
-        setReport(null);
-        setError(fetchError.message);
+        setReportError(fetchError.message || "Failed to load attendance report");
       }
     }
     loadReport();
@@ -111,8 +122,13 @@ export default function AttendanceReports() {
         </div>
       ) : error ? (
         <div className="attendance-reports-error card">
-          <h3>Unable to load report</h3>
+          <h3>Unable to load teachers</h3>
           <p>{error}</p>
+        </div>
+      ) : reportError && !report ? (
+        <div className="attendance-reports-error card">
+          <h3>Unable to load report</h3>
+          <p>{reportError}</p>
         </div>
       ) : !report ? (
         <EmptyState title="No report data" message="Select a teacher and month to view attendance details." />

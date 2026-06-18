@@ -161,6 +161,10 @@ export async function getAttendanceRecords() {
   return request("/attendance");
 }
 
+export async function getTeacherAttendanceRecords(teacherId) {
+  return request(`/attendance?teacherId=${encodeURIComponent(teacherId)}`);
+}
+
 export async function getTeacherAttendanceReport(teacherId, month, year) {
   return request(`/attendance/report/${teacherId}?month=${month}&year=${year}`);
 }

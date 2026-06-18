@@ -323,7 +323,109 @@ button.secondary:hover {
   font-size: 18px;
   animation: emojiPop 1.5s ease-out infinite alternate;
 }
+/* Admin panel drawer popup styling */
+.panel-drawer {
+  position: fixed;
+  inset: 0;
+  background: rgba(12, 25, 18, 0.48);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
 
+.panel-drawer__content {
+  width: min(640px, 100%);
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: 0 24px 45px rgba(19, 38, 33, 0.18);
+  border: 1px solid rgba(33, 49, 41, 0.08);
+}
+
+.panel-drawer__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.panel-drawer__header h3 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #152a1f;
+}
+
+.panel-drawer__cta {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.panel-drawer__cta button {
+  min-width: 120px;
+}
+
+.panel-drawer label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #334b3c;
+}
+
+.panel-drawer input,
+.panel-drawer textarea,
+.panel-drawer select {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #d9e4de;
+  background: #f8faf9;
+  color: #1f3225;
+  font-size: 14px;
+}
+
+.panel-drawer textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.panel-drawer .event-details {
+  background: #f8faf9;
+  padding: 20px;
+  border-radius: 18px;
+  border: 1px solid #d9e4de;
+}
+
+.panel-drawer .event-type {
+  width: fit-content;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #166534;
+  font-weight: 700;
+}
+
+.panel-drawer .event-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.panel-drawer .calendar-grid__event-dot {
+  width: 12px;
+  height: 12px;
+}
 /* ==========================================================================
    KEYFRAME ANIMATION ENGINE PIPELINES
    ========================================================================== */

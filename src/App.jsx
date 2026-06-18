@@ -25,9 +25,15 @@ import { useEffect, useState } from "react";
 
 function App() {
 
-   const [register, setRegister] = useState(true);
-   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
-   const [userRole, setUserRole] = useState(null);
+   const initialRole = (() => {
+      const storedRole = localStorage.getItem("userRole");
+      if (storedRole === "teacher" || storedRole === "admin") return storedRole;
+      return localStorage.getItem("adminLoggedIn") === "true" ? "admin" : null;
+   })();
+
+   const [register, setRegister] = useState(() => initialRole === null);
+   const [isUserLoggedIn, setIsUserLoggedIn] = useState(() => initialRole !== null);
+   const [userRole, setUserRole] = useState(() => initialRole);
 
    const checkAdmin = async () => {
       try {
@@ -47,20 +53,9 @@ function App() {
    };
 
    useEffect(() => {
-      // Check if user is logged in from localStorage
-      const adminLoggedIn = localStorage.getItem("adminLoggedIn");
-      const role = localStorage.getItem("userRole");
-      
-      if (adminLoggedIn === "true" || role === "admin") {
-         setIsUserLoggedIn(true);
-         setUserRole("admin");
-      } else if (role === "teacher") {
-         setIsUserLoggedIn(true);
-         setUserRole("teacher");
-      } else {
-         checkAdmin();
-      }
-   }, []);
+      if (userRole) return;
+      checkAdmin();
+   }, [userRole]);
 
 const handleLoginSuccess = () => {
    const role = localStorage.getItem("userRole");

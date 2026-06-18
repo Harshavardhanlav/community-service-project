@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { getNotices, getCalendarDates, getTasks, updateTask } from "../../../services/api";
+import {
+  getNotices,
+  getCalendarDates,
+  getTasks,
+  getTeacherAttendanceRecords,
+  updateTask,
+} from "../../../services/api";
 import { StatsCard } from "../../../components/StatsCard/StatsCard";
 import { NoticeCard } from "../../../components/NoticeCard/NoticeCard";
 import { EventCard } from "../../../components/EventCard/EventCard";
@@ -13,20 +19,25 @@ export default function TeacherDashboard() {
   const [notices, setNotices] = useState([]);
   const [events, setEvents] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [attendanceStatus, setAttendanceStatus] = useState("Not marked");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const teacher = JSON.parse(localStorage.getItem("teacherData")) || {};
+  const teacher = useMemo(
+    () => JSON.parse(localStorage.getItem("teacherData")) || {},
+    []
+  );
 
   useEffect(() => {
     async function loadDashboard() {
       setLoading(true);
       setError("");
       try {
-        const [noticesData, eventsData, tasksData] = await Promise.all([
+        const [noticesData, eventsData, tasksData, attendanceData] = await Promise.all([
           getNotices(),
           getCalendarDates(),
           getTasks(),
+          getTeacherAttendanceRecords(teacher.teacherID),
         ]);
 
         setNotices(noticesData || []);
@@ -38,6 +49,18 @@ export default function TeacherDashboard() {
               t.assignedTeacherId === teacher.teacherID
           )
         );
+
+        const today = new Date().toDateString();
+        const todayRecord = (attendanceData || []).find((record) => {
+          const recordDate = new Date(record.attendanceDate).toDateString();
+          return recordDate === today;
+        });
+
+        setAttendanceStatus(
+          todayRecord
+            ? todayRecord.status || "Present"
+            : "Not marked"
+        );
       } catch (fetchError) {
         setError(fetchError.message || "Something went wrong.");
       } finally {
@@ -46,7 +69,7 @@ export default function TeacherDashboard() {
     }
 
     loadDashboard();
-  }, [teacher]);
+  }, [teacher.fullName, teacher.teacherID]);
 
   const upcomingEvents = useMemo(() => {
     const today = new Date();
@@ -69,6 +92,12 @@ export default function TeacherDashboard() {
     completedTasks: tasks.filter((t) => t.status === "Completed").length,
     totalNotices: notices.length,
   };
+
+  const attendanceStatusClass = attendanceStatus === "Present"
+    ? "status-present"
+    : attendanceStatus === "Absent"
+    ? "status-absent"
+    : "status-not-marked";
 
   const todayLabel = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -107,9 +136,10 @@ export default function TeacherDashboard() {
             <div className="dashboard-page__stats-area">
               <div className="dashboard-page__stats">
                 <StatsCard
-                  label="📍 Today's Attendance"
-                  value="Mark Now"
-                  onClick={() => navigate("/teacher/attendance")}
+                  label="Today's Attendance"
+                  value={
+                    <span className={`attendance-status-dot ${attendanceStatusClass}`} />
+                  }
                 />
                 <StatsCard
                   label="📋 Assigned Tasks"
@@ -164,8 +194,7 @@ export default function TeacherDashboard() {
                     <NoticeCard
                       key={notice._id || notice.title}
                       notice={notice}
-                      onEdit={() => {}}
-                      onDelete={() => {}}
+                      hideActions={true}
                     />
                   ))}
                 </div>

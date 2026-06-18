@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "../../../components/LoadingSpinner/LoadingSpinner";
+import { getTeacherAttendanceRecords } from "../../../services/api";
 import { getCurrentLocation, isWithinSchoolRadius, formatDistance } from "../../../utils/geolocation";
 import { SCHOOL_CONFIG } from "../../../config/schoolConfig";
 import "./TeacherMarkAttendance.css";
@@ -14,8 +15,47 @@ export default function TeacherMarkAttendance() {
   const [locationData, setLocationData] = useState(null);
   const [distanceData, setDistanceData] = useState(null);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [attendanceMarked, setAttendanceMarked] = useState(false);
+  const [attendanceStatus, setAttendanceStatus] = useState("Not marked");
+  const [markedTime, setMarkedTime] = useState(null);
 
   const teacher = JSON.parse(localStorage.getItem("teacherData")) || {};
+
+  // Check if attendance already marked today (either present or absent)
+  useEffect(() => {
+    async function loadTodayAttendance() {
+      const todayDateString = new Date().toDateString();
+      const storedDate = localStorage.getItem("attendanceMarkedDate");
+      const storedTime = localStorage.getItem("attendanceMarkedTime");
+
+      if (storedDate === todayDateString) {
+        setAttendanceMarked(true);
+        setAttendanceStatus("Present");
+        setMarkedTime(storedTime);
+        return;
+      }
+
+      if (!teacher.teacherID) return;
+
+      try {
+        const attendanceData = await getTeacherAttendanceRecords(teacher.teacherID);
+        const todayRecord = (attendanceData || []).find((record) => {
+          const recordDate = new Date(record.attendanceDate).toDateString();
+          return recordDate === todayDateString;
+        });
+
+        if (todayRecord) {
+          setAttendanceMarked(true);
+          setAttendanceStatus(todayRecord.status || "Present");
+          setMarkedTime(new Date(todayRecord.attendanceDate).toLocaleTimeString());
+        }
+      } catch (err) {
+        console.warn("Unable to load today attendance", err);
+      }
+    }
+
+    loadTodayAttendance();
+  }, [teacher.teacherID]);
 
   // Update current time every second
   useEffect(() => {
@@ -91,6 +131,13 @@ export default function TeacherMarkAttendance() {
         setLocationData(null);
         setDistanceData(null);
         
+        // Store attendance marked status in localStorage
+        const today = new Date().toDateString();
+        localStorage.setItem("attendanceMarkedDate", today);
+        localStorage.setItem("attendanceMarkedTime", new Date().toLocaleTimeString());
+        setAttendanceMarked(true);
+        setMarkedTime(new Date().toLocaleTimeString());
+        
         // Redirect to dashboard after 2 seconds
         setTimeout(() => {
           navigate("/teacher/my-attendance");
@@ -158,112 +205,138 @@ export default function TeacherMarkAttendance() {
           </div>
         </div>
 
-        {/* Location Status Card */}
-        <div className="mark-attendance__location-card card">
-          <h3>📌 Location Status</h3>
-
-          {locationData ? (
-            <div className="mark-attendance__location-data">
-              <div className="mark-attendance__location-item">
-                <span className="mark-attendance__label">Latitude</span>
-                <span className="mark-attendance__value">
-                  {locationData.latitude.toFixed(6)}
-                </span>
+        {/* Already Marked Message */}
+        {attendanceMarked ? (
+          <div className="mark-attendance__success-complete card">
+            <div className="mark-attendance__success-content">
+              <span className="mark-attendance__success-icon-large">✅</span>
+              <h2>Attendance Already Marked</h2>
+              <p>
+                Your attendance for today is already recorded as{' '}
+                <strong>{attendanceStatus}</strong>.
+              </p>
+              <div className="mark-attendance__marked-info">
+                <span className="mark-attendance__label">Marked at:</span>
+                <span className="mark-attendance__value">{markedTime || "N/A"}</span>
               </div>
-              <div className="mark-attendance__location-item">
-                <span className="mark-attendance__label">Longitude</span>
-                <span className="mark-attendance__value">
-                  {locationData.longitude.toFixed(6)}
-                </span>
-              </div>
+              <button
+                className="mark-attendance__btn mark-attendance__btn--primary"
+                onClick={() => navigate("/teacher/my-attendance")}
+              >
+                View Your Attendance History
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Location Status Card */}
+            <div className="mark-attendance__location-card card">
+              <h3>📌 Location Status</h3>
 
-              {distanceData && (
-                <>
+              {locationData ? (
+                <div className="mark-attendance__location-data">
                   <div className="mark-attendance__location-item">
-                    <span className="mark-attendance__label">Distance from School</span>
-                    <span
-                      className={`mark-attendance__value ${
-                        distanceData.isWithin
-                          ? "mark-attendance__distance--inside"
-                          : "mark-attendance__distance--outside"
-                      }`}
-                    >
-                      {distanceData.distance} meters
+                    <span className="mark-attendance__label">Latitude</span>
+                    <span className="mark-attendance__value">
+                      {locationData.latitude.toFixed(6)}
+                    </span>
+                  </div>
+                  <div className="mark-attendance__location-item">
+                    <span className="mark-attendance__label">Longitude</span>
+                    <span className="mark-attendance__value">
+                      {locationData.longitude.toFixed(6)}
                     </span>
                   </div>
 
-                  <div className="mark-attendance__status-indicator">
-                    <div
-                      className={`mark-attendance__status-badge ${
-                        distanceData.isWithin ? "status--inside" : "status--outside"
-                      }`}
-                    >
-                      {distanceData.isWithin ? "✅ Inside Radius" : "❌ Outside Radius"}
-                    </div>
-                  </div>
-                </>
+                  {distanceData && (
+                    <>
+                      <div className="mark-attendance__location-item">
+                        <span className="mark-attendance__label">Distance from School</span>
+                        <span
+                          className={`mark-attendance__value ${
+                            distanceData.isWithin
+                              ? "mark-attendance__distance--inside"
+                              : "mark-attendance__distance--outside"
+                          }`}
+                        >
+                          {distanceData.distance} meters
+                        </span>
+                      </div>
+
+                      <div className="mark-attendance__status-indicator">
+                        <div
+                          className={`mark-attendance__status-badge ${
+                            distanceData.isWithin ? "status--inside" : "status--outside"
+                          }`}
+                        >
+                          {distanceData.isWithin ? "✅ Inside Radius" : "❌ Outside Radius"}
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  <button
+                    className="mark-attendance__btn mark-attendance__btn--secondary"
+                    onClick={handleGetLocation}
+                    disabled={locationLoading}
+                  >
+                    {locationLoading ? "Getting Location..." : "🔄 Refresh Location"}
+                  </button>
+                </div>
+              ) : (
+                <div className="mark-attendance__no-location">
+                  <p>Click the button below to get your current location</p>
+                  <button
+                    className="mark-attendance__btn mark-attendance__btn--primary"
+                    onClick={handleGetLocation}
+                    disabled={locationLoading}
+                  >
+                    {locationLoading ? <LoadingSpinner /> : "📍 Get My Location"}
+                  </button>
+                </div>
               )}
-
-              <button
-                className="mark-attendance__btn mark-attendance__btn--secondary"
-                onClick={handleGetLocation}
-                disabled={locationLoading}
-              >
-                {locationLoading ? "Getting Location..." : "🔄 Refresh Location"}
-              </button>
             </div>
-          ) : (
-            <div className="mark-attendance__no-location">
-              <p>Click the button below to get your current location</p>
-              <button
-                className="mark-attendance__btn mark-attendance__btn--primary"
-                onClick={handleGetLocation}
-                disabled={locationLoading}
-              >
-                {locationLoading ? <LoadingSpinner /> : "📍 Get My Location"}
-              </button>
-            </div>
-          )}
-        </div>
 
-        {/* Error Message */}
-        {error && (
-          <div className="mark-attendance__error card">
-            <span className="mark-attendance__error-icon">⚠️</span>
-            <p>{error}</p>
-          </div>
-        )}
+            {/* Error Message */}
+            {error && (
+              <div className="mark-attendance__error card">
+                <span className="mark-attendance__error-icon">⚠️</span>
+                <p>{error}</p>
+              </div>
+            )}
 
-        {/* Success Message */}
-        {success && (
-          <div className="mark-attendance__success card">
-            <span className="mark-attendance__success-icon">{success}</span>
-          </div>
-        )}
+            {/* Success Message */}
+            {success && (
+              <div className="mark-attendance__success card">
+                <span className="mark-attendance__success-icon">{success}</span>
+              </div>
+            )}
 
-        {/* Action Buttons */}
-        {locationData && (
-          <div className="mark-attendance__actions">
-            <button
-              className={`mark-attendance__btn mark-attendance__btn--submit ${
-                !distanceData?.isWithin ? "disabled" : ""
-              }`}
-              onClick={handleMarkAttendance}
-              disabled={loading || !distanceData?.isWithin}
-            >
-              {loading ? "Marking Attendance..." : "✅ Mark Attendance"}
-            </button>
-            <button
-              className="mark-attendance__btn mark-attendance__btn--cancel"
-              onClick={() => {
-                setLocationData(null);
-                setDistanceData(null);
-              }}
-              disabled={loading}
-            >
-              Cancel
-            </button>
-          </div>
+            {/* Action Buttons */}
+            {locationData && (
+              <div className="mark-attendance__actions">
+                <button
+                  className={`mark-attendance__btn mark-attendance__btn--submit ${
+                    !distanceData?.isWithin ? "disabled" : ""
+                  }`}
+                  onClick={handleMarkAttendance}
+                  disabled={loading || !distanceData?.isWithin}
+                >
+                  {loading ? "Marking Attendance..." : "✅ Mark Attendance"}
+                </button>
+                <button
+                  className="mark-attendance__btn mark-attendance__btn--cancel"
+                  onClick={() => {
+                    setLocationData(null);
+                    setDistanceData(null);
+                  }}
+                  disabled={loading}
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </section>

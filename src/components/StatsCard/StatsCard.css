@@ -63,3 +63,24 @@ body[data-theme="dark"] .stats-card {
   color: #94a3b8;
   font-size: 0.9rem;
 }
+
+.attendance-status-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+.status-present {
+  background: #16a34a;
+}
+
+.status-absent {
+  background: #dc2626;
+}
+
+.status-not-marked {
+  background: #f59e0b;
+}

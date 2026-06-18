@@ -21,7 +21,7 @@ export default function TeacherMyAttendance() {
     setError("");
     try {
       const response = await fetch(
-        `http://localhost:5000/attendance/report/${teacher.teacherID}`
+        `http://localhost:5000/attendance?teacherId=${teacher.teacherID}`
       );
       const data = await response.json();
       setAttendance(Array.isArray(data) ? data : []);

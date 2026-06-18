@@ -76,7 +76,7 @@ const updateNotice = async (req, res) => {
       const notice = await Notice.findByIdAndUpdate(
          req.params.id,
          req.body,
-         { new: true }
+         { returnDocument: 'after' }
       );
 
       if (!notice) {
