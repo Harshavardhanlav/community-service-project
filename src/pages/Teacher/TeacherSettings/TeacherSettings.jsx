@@ -42,7 +42,7 @@ export default function TeacherSettings() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/teachers/update/${teacher._id}`,
+        `community-service-project-backend.onrender.com/teachers/update/${teacher._id}`,
         {
           method: "PUT",
           headers: {
