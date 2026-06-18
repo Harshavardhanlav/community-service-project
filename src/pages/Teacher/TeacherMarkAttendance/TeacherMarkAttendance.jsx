@@ -108,7 +108,7 @@ export default function TeacherMarkAttendance() {
     setLoading(true);
 
     try {
-      const response = await fetch("https://community-service-project-navy.vercel.app/attendance/mark-attendance", {
+      const response = await fetch("https://community-service-project-backend.onrender.com/attendance/mark-attendance", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

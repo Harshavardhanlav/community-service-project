@@ -32,7 +32,7 @@ export default function TeacherProfile() {
     setMessage("");
     try {
       const response = await fetch(
-        `https://community-service-project-navy.vercel.app/teachers/update/${teacher._id}`,
+        `https://community-service-project-backend.onrender.com/teachers/update/${teacher._id}`,
         {
           method: "PUT",
           headers: {
@@ -74,7 +74,7 @@ export default function TeacherProfile() {
 
     try {
       const response = await fetch(
-        `https://community-service-project-navy.vercel.app/teachers/update/${teacher._id}`,
+        `https://community-service-project-backend.onrender.com/teachers/update/${teacher._id}`,
         {
           method: "PUT",
           headers: {
