@@ -1,6 +1,4 @@
-import { useContext } from "react";
 import { useLocation } from "react-router-dom";
-import { ThemeContext } from "../ThemeProvider/ThemeProvider";
 import "./Header.css";
 
 const pageTitles = {
@@ -16,18 +14,15 @@ const pageTitles = {
 };
 
 export function Header() {
-  const { theme, toggleTheme } = useContext(ThemeContext);
   const location = useLocation();
   const title = pageTitles[location.pathname] || "Dashboard";
 
   return (
     <header className="page-header">
       <div>
-        <p className="page-badge">🟢Nexus Admin</p>
+        <p className="page-badge">🟢 Nexus Admin/Teacher Portal</p>
       </div>
-      <button type="button" className="theme-toggle" onClick={toggleTheme}>
-        {theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
-      </button>
+      {/* Theme toggle button has been removed */}
     </header>
   );
 }

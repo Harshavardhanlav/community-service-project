@@ -230,7 +230,7 @@ await deleteCalendarDate(
   return (
     <section className="calendar-page">
       <div className="calendar-page__header card">
-        <div>
+        <div className="page-header-block">
           <h2>📅 School Calendar</h2>
           <p>Manage holidays, events, and working Sundays with a modern calendar interface.</p>
         </div>

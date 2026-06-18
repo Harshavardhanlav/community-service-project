@@ -28,7 +28,7 @@ export default function ActivityLogs() {
   return (
     <section className="activity-logs-page">
       <div className="activity-logs-header card">
-        <div>
+        <div className="page-header-block">
           <h2>📋Activity Logs</h2>
           <p>See the latest system updates, management logs, and administrative adjustments.</p>
         </div>

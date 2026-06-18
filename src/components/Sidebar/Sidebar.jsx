@@ -17,10 +17,12 @@ export function Sidebar() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("adminLoggedIn");
-    localStorage.removeItem("adminID");
-    window.location.href = "/";
-  };
+  // Clear everything related to authentication
+  localStorage.clear(); 
+  
+  // Use replace to ensure the history stack is cleared completely
+  window.location.replace("/");
+};
 
   return (
     <aside className="sidebar">

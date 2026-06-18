@@ -142,7 +142,7 @@ const filteredTasks = tasks.filter((task) => {
     <section className="tasks-page">
 <div className="tasks-page__header card">
 
-  <div>
+  <div className="page-header-block">
     <h2>📝Tasks</h2>
     <p>Manage and track all teacher tasks.</p>
   </div>

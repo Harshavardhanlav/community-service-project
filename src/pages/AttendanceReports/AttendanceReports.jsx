@@ -84,7 +84,7 @@ export default function AttendanceReports() {
   return (
     <section className="attendance-reports-page">
       <div className="attendance-reports-header card">
-        <div>
+        <div className="page-header-block">
           <h2>📊Attendance Reports</h2>
           <p>View monthly attendance performance for each teacher in NEXUS.</p>
         </div>

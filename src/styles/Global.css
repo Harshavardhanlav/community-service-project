@@ -35,6 +35,8 @@ body {
   color: var(--text);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  font-family: 'Lora', serif; 
+  -webkit-font-smoothing: antialiased;
 }
 
 button, input, textarea, select {
@@ -454,7 +456,7 @@ button,
 input,
 select,
 textarea {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif !important;
+  font-family: 'Lora', serif;
   
   /* Enables high-fidelity subpixel anti-aliasing for that crisp, clean text look */
   -webkit-font-smoothing: antialiased;
@@ -466,7 +468,7 @@ textarea {
 
 /* Ensure all content headers follow the same crisp font geometry */
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Inter', sans-serif !important;
+  font-family: 'Playfair Display', serif;
   letter-spacing: -0.02em; /* Gives large titles a modern, tight workspace layout */
 }
 html, body, #root {
@@ -482,4 +484,14 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'Playfair Display', serif !important;
   font-weight: 700;
   color: #1a2e26;
+}
+/* Add this to your CSS file */
+.page-header-block {
+  background-color: #3d8564; /* This is the sage green color from the teacher portal */
+  color: #ffffff;            /* Ensures text is white for contrast */
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  display: block;   /* Ensures it acts as a full-width block */
+  width: 100%;
 }
