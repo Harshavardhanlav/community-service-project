@@ -38,8 +38,8 @@ function App() {
    const checkAdmin = async () => {
       try {
          const response = await fetch(
-            "http://localhost:5000/admin/check-admin"
-         );
+"https://community-service-project-backend.onrender.com/admin/check-admin"
+);
 
          const data = await response.json();
 
