@@ -14,7 +14,6 @@ const activityLogRoutes = require("./routes/activityLogRoutes");
 const { autoMarkAbsentForToday } = require("./controllers/attendanceController");
 
 dotenv.config();
-ConnectDB();
 console.log(process.env.MONGO_URI);
 const app = express();
 app.use(express.json());
@@ -67,8 +66,18 @@ const scheduleAutoMarkAbsent = async () => {
   }
 };
 
-scheduleAutoMarkAbsent();
+dotenv.config();
 
-app.listen(PORT, () => {
-  console.log("server is running");
-});
+ConnectDB()
+  .then(() => {
+    console.log("MongoDB Connected");
+
+    scheduleAutoMarkAbsent();
+
+    app.listen(PORT, () => {
+      console.log("server is running");
+    });
+  })
+  .catch((err) => {
+    console.error("MongoDB Connection Failed:", err);
+  });
