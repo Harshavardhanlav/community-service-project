@@ -50,7 +50,7 @@ export async function getNotices() {
 export async function deleteTask(id) {
 
    const response = await fetch(
-      `http://localhost:5000/tasks/${id}`,
+      `${BASE_URL}/tasks/${id}`,
       {
          method: "DELETE"
       }
@@ -62,7 +62,7 @@ export async function deleteTask(id) {
 export async function deleteNotice(id) {
 
    const response = await fetch(
-      `http://localhost:5000/notices/${id}`,
+      `${BASE_URL}/notices/${id}`,
       {
          method: "DELETE"
       }
@@ -74,7 +74,7 @@ export async function deleteNotice(id) {
 export async function updateNotice(id, noticeData) {
 
    const response = await fetch(
-      `http://localhost:5000/notices/${id}`,
+      `${BASE_URL}/notices/${id}`,
       {
          method: "PUT",
          headers: {
@@ -96,7 +96,7 @@ export async function createNotice(noticeData) {
 export async function deleteCalendarDate(id) {
 
    const response = await fetch(
-      `http://localhost:5000/calendar/${id}`,
+      `${BASE_URL}/calendar/${id}`,
       {
          method:"DELETE"
       }
@@ -118,7 +118,7 @@ export async function createCalendarDate(calendarData) {
 export async function deleteTeacher(id) {
 
    const response = await fetch(
-      `http://localhost:5000/teachers/${id}`,
+      `${BASE_URL}/teachers/${id}`,
       {
          method: "DELETE",
       }
