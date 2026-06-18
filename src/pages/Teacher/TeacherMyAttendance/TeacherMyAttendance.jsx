@@ -21,7 +21,7 @@ export default function TeacherMyAttendance() {
     setError("");
     try {
       const response = await fetch(
-        `http://localhost:5000/attendance?teacherId=${teacher.teacherID}`
+        `https://community-service-project-navy.vercel.app/attendance?teacherId=${teacher.teacherID}`
       );
       const data = await response.json();
       setAttendance(Array.isArray(data) ? data : []);
