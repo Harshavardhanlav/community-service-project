@@ -13,7 +13,7 @@ export function LAuthPanel({ onLoginSuccess }) {
       setError("");
       try {
          const response = await fetch(
-            "http://localhost:5000/admin/admin-login",
+            "https://community-service-project-backend.onrender.com/admin/admin-login",
             {
                method: "POST",
                headers: {
@@ -47,7 +47,7 @@ export function LAuthPanel({ onLoginSuccess }) {
       setError("");
       try {
          const response = await fetch(
-            "http://localhost:5000/teachers/teacher-login",
+            "https://community-service-project-backend.onrender.com/teachers/teacher-login",
             {
                method: "POST",
                headers: {
